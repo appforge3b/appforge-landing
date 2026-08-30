@@ -35,96 +35,51 @@
       }
     }
   </script>
-<!-- CSV Parser -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-<script>
-  // Paste your published Google Sheet CSV URL here:
-  const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSiU7_PPvamhwwxbz1RlUV0egIPV866HG5m8y71KZw7RuO--16JXjZ8YMs7bQRRkRzdjMzjH75UI4n2/pub?gid=0&single=true&output=csv";
+  <!-- Google Sheets CSV Parser Sync -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSiU7_PPvamhwwxbz1RlUV0egIPV866HG5m8y71KZw7RuO--16JXjZ8YMs7bQRRkRzdjMzjH75UI4n2/pub?gid=0&single=true&output=csv";
 
-  async function loadSheetContent() {
-    if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL === "https://docs.google.com/spreadsheets/d/e/2PACX-1vSiU7_PPvamhwwxbz1RlUV0egIPV866HG5m8y71KZw7RuO--16JXjZ8YMs7bQRRkRzdjMzjH75UI4n2/pub?gid=0&single=true&output=csv
-") return;
-
-    Papa.parse(GOOGLE_SHEET_CSV_URL, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        results.data.forEach(row => {
-          if (!row.key || !row.value) return;
-          
-          // Match any HTML element with data-cms="key"
-          const elements = document.querySelectorAll(`[data-cms="${row.key}"]`);
-          elements.forEach(el => {
-            if (el.tagName === 'IMG') {
-              el.src = row.value.trim();
-            } else if (el.tagName === 'A' && row.key.includes('link')) {
-              el.href = row.value.trim();
-            } else {
-              el.innerHTML = row.value.trim();
-            }
+    async function loadSheetContent() {
+      if (!GOOGLE_SHEET_CSV_URL) return;
+      Papa.parse(GOOGLE_SHEET_CSV_URL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          results.data.forEach(row => {
+            if (!row.key || !row.value) return;
+            const elements = document.querySelectorAll(`[data-cms="${row.key}"]`);
+            elements.forEach(el => {
+              if (el.tagName === 'IMG') el.src = row.value.trim();
+              else if (el.tagName === 'A' && row.key.includes('link')) el.href = row.value.trim();
+              else el.innerHTML = row.value.trim();
+            });
           });
-        });
-      }
-    });
-  }
+        }
+      });
+    }
+    window.addEventListener('DOMContentLoaded', loadSheetContent);
+  </script>
 
-  window.addEventListener('DOMContentLoaded', loadSheetContent);
-</script>
   <style>
-    body {
-      background-color: #FFFFFF;
-      color: #000000;
-      font-family: 'Inter', sans-serif;
-    }
+    body { background-color: #FFFFFF; color: #000000; font-family: 'Inter', sans-serif; }
 
-    /* INACTIVE TAB DEFAULTS */
-    .tab-btn {
-      background-color: #FAFAFA !important;
-      color: #000000 !important;
-      border-color: rgba(0, 0, 0, 0.12) !important;
-    }
-    .tab-btn strong {
-      color: #000000 !important;
-    }
-    .tab-btn .tab-icon {
-      color: #000000 !important;
-    }
-    .tab-btn span {
-      color: #737373 !important;
-    }
+    .tab-btn { background-color: #FAFAFA !important; color: #000000 !important; border-color: rgba(0, 0, 0, 0.12) !important; }
+    .tab-btn strong, .tab-btn .tab-icon { color: #000000 !important; }
+    .tab-btn span { color: #737373 !important; }
 
-    /* ACTIVE TAB STATE */
-    .tab-btn.active {
-      background-color: #000000 !important;
-      color: #FFFFFF !important;
-      border-color: #000000 !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
-    }
-    .tab-btn.active strong {
-      color: #CCFF00 !important;
-    }
-    .tab-btn.active .tab-icon {
-      color: #CCFF00 !important;
-    }
-    .tab-btn.active span {
-      color: #D4D4D4 !important;
-    }
+    .tab-btn.active { background-color: #000000 !important; color: #FFFFFF !important; border-color: #000000 !important; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25); }
+    .tab-btn.active strong, .tab-btn.active .tab-icon { color: #CCFF00 !important; }
+    .tab-btn.active span { color: #D4D4D4 !important; }
 
-    .category-btn.active {
-      background-color: #000000 !important;
-      color: #FFFFFF !important;
-      border-color: #000000 !important;
-      outline: 2px solid #CCFF00;
-    }
+    .category-btn.active { background-color: #000000 !important; color: #FFFFFF !important; border-color: #000000 !important; outline: 2px solid #CCFF00; }
 
-    .view-panel {
-      display: none;
-    }
-    .view-panel.active {
-      display: block;
-      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; animation: fadeIn 0.2s ease-out; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
@@ -135,819 +90,551 @@
 
 <body class="antialiased min-h-screen flex flex-col bg-white text-black selection:bg-brand-lime selection:text-black">
 
-  <!-- ================= TOP NAVIGATION ================= -->
-  <header class="border-b border-black/10 sticky top-0 bg-white/95 backdrop-blur-md z-30">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-xl bg-black text-brand-lime flex items-center justify-center font-mono font-black text-lg border border-black shadow-sm">
-          ✦
+  <!-- ================================================================= -->
+  <!-- 1. MOBILE-ONLY VIEW (Visible on screens < 768px)                  -->
+  <!-- ================================================================= -->
+  <div class="block md:hidden">
+    <!-- Mobile Header -->
+    <header class="border-b border-black/10 sticky top-0 bg-white/95 backdrop-blur-md z-40">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-lg bg-black text-brand-lime flex items-center justify-center font-mono font-black text-sm">✦</div>
+          <div>
+            <span class="font-display font-black text-sm tracking-tight block leading-tight">CLUB CONSOLE</span>
+            <span class="text-[8px] tracking-widest text-black/50 uppercase font-semibold">BY APPFORGE</span>
+          </div>
         </div>
-        <div>
-          <span class="font-display font-black text-xl tracking-tight block leading-tight">CLUB CONSOLE</span>
-          <span class="text-[10px] tracking-widest text-black/60 uppercase font-semibold">BY APPFORGE</span>
-        </div>
-      </div>
-
-      <div class="flex items-center space-x-6">
-        <a href="#demo" class="text-xs font-semibold text-black hover:text-neutral-600 hidden sm:inline-block">Product Tour</a>
-        <a href="#why-appforge" class="text-xs font-semibold text-black hover:text-neutral-600 hidden sm:inline-block">Why AppForge</a>
-        <a href="#pricing" class="text-xs font-semibold text-black hover:text-neutral-600 hidden sm:inline-block">Pricing</a>
-        <a href="#about" class="text-xs font-semibold text-black hover:text-neutral-600 hidden sm:inline-block">About</a>
-        <a href="#pricing" class="px-4 py-2 rounded-lg bg-black text-brand-lime text-xs font-bold border border-black hover:bg-neutral-900 transition-all shadow-sm">
-          Start 30-Day Free Trial
+        <a href="#pricing-mob" class="px-3 py-1.5 rounded-lg bg-black text-brand-lime text-[11px] font-bold">
+          Free Trial
         </a>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- ================= HERO SECTION ================= -->
-  <section class="max-w-6xl mx-auto px-6 pt-14 pb-8 text-center space-y-4">
-    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black text-white text-xs font-semibold">
-      <span class="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></span>
-      Zero IT Skills Needed • Built for Academies, Studios & Multi-Sport Clubs
-    </span>
-    
-    <h1 class="font-display font-black text-4xl sm:text-6xl text-black tracking-tight max-w-4xl mx-auto leading-tight">
-      Stop wasting hours on paperwork.<br />
-      Run your entire academy in <span class="underline decoration-brand-lime decoration-4 underline-offset-4">one place</span>.
-    </h1>
-
-    <p class="text-neutral-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-      Club Console by AppForge is the simple operating system for sports clubs, performing arts schools, creative studios, martial arts dojos, and wellness centers. Track fee payments, send direct WhatsApp reminders, and showcase your venues, schedules, amenities, and photo galleries effortlessly.
-    </p>
-  </section>
-
-  <!-- ================= CORE VALUE PROPOSITIONS ================= -->
-  <section class="max-w-6xl mx-auto px-6 py-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <!-- Benefit 1 -->
-      <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
-        <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
-          <i data-lucide="receipt" class="w-5 h-5"></i>
-        </div>
-        <h3 class="font-bold text-lg text-black">Instant Fees & Revenue Tracking</h3>
-        <p class="text-sm text-neutral-600 leading-relaxed">
-          Say goodbye to lost registers and confusing Excel sheets. Know exactly who has paid for the month, whose dues are overdue, and track collected club revenue in real-time.
-        </p>
+    <!-- Mobile Hero -->
+    <section class="px-4 pt-8 pb-6 text-center space-y-3">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-black/10 text-[10px] font-semibold text-neutral-800">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        Zero IT Skills • Built for Academies & Clubs
       </div>
-
-      <!-- Benefit 2 -->
-      <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
-        <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
-          <i data-lucide="message-circle" class="w-5 h-5"></i>
-        </div>
-        <h3 class="font-bold text-lg text-black">Targeted WhatsApp Broadcasts</h3>
-        <p class="text-sm text-neutral-600 leading-relaxed">
-          Send weather alerts, schedule changes, or payment pings directly to all parents, specific training batches, or only fee-pending members in 1 click at ₹0 extra API cost.
-        </p>
-      </div>
-
-      <!-- Benefit 3 -->
-      <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
-        <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
-          <i data-lucide="building-2" class="w-5 h-5"></i>
-        </div>
-        <h3 class="font-bold text-lg text-black">One-Stop Digital Hub</h3>
-        <p class="text-sm text-neutral-600 leading-relaxed">
-          Showcase your campuses, multiple class disciplines, studio facilities, high-res photo albums, and digital student report cards under your own custom brand.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ================= INTERACTIVE PLATFORM DEMO ================= -->
-  <section id="demo" class="max-w-6xl mx-auto px-6 py-10 space-y-6">
-    
-    <div class="text-center space-y-1">
-      <span class="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">INTERACTIVE PREVIEW</span>
-      <h2 class="font-display font-black text-3xl sm:text-4xl text-black">See how Club Console works for your institute</h2>
-    </div>
-
-    <!-- MAIN PRODUCT SELECTOR TABS -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <button onclick="switchProduct('academy')" id="tab-academy" class="tab-btn active p-4 rounded-xl border text-left transition-all cursor-pointer">
-        <div class="flex items-center gap-2.5 mb-1">
-          <i data-lucide="graduation-cap" class="w-4 h-4 tab-icon"></i>
-          <strong class="text-sm font-bold">1. Academy & Student Hub</strong>
-        </div>
-        <span class="text-xs">Sports, studios, arts & wellness</span>
-      </button>
-
-      <button onclick="switchProduct('admin-ops')" id="tab-admin-ops" class="tab-btn p-4 rounded-xl border text-left transition-all cursor-pointer hover:border-black">
-        <div class="flex items-center gap-2.5 mb-1">
-          <i data-lucide="wallet" class="w-4 h-4 tab-icon"></i>
-          <strong class="text-sm font-bold">2. Fees & WhatsApp Desk</strong>
-        </div>
-        <span class="text-xs">Zero-paperwork dues & messaging</span>
-      </button>
-
-      <button onclick="switchProduct('venues-events')" id="tab-venues-events" class="tab-btn p-4 rounded-xl border text-left transition-all cursor-pointer hover:border-black">
-        <div class="flex items-center gap-2.5 mb-1">
-          <i data-lucide="calendar" class="w-4 h-4 tab-icon"></i>
-          <strong class="text-sm font-bold">3. Venues, Events & Albums</strong>
-        </div>
-        <span class="text-xs">Campuses, showcases & photo vault</span>
-      </button>
-    </div>
-
-    <!-- ================= PANEL 1: ACADEMY & STUDENT HUB ================= -->
-    <div id="panel-academy" class="view-panel active p-6 sm:p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
-      
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/10">
-        <div>
-          <h3 class="font-bold text-xl text-black">Choose your academy or institute type</h3>
-          <p class="text-xs text-neutral-500">Club Console instantly reorganizes schedules, batch intakes, and member enrollment workflows.</p>
-        </div>
-        
-        <!-- 8 EVENLY DISTRIBUTED TILES -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full sm:w-auto">
-          <button onclick="switchAcademySport('multisport')" id="btn-sport-multisport" class="category-btn active px-3 py-2 rounded-lg border border-black bg-black text-white text-xs font-semibold cursor-pointer text-center">🏢 Multi-Sport Club</button>
-          <button onclick="switchAcademySport('basketball')" id="btn-sport-basketball" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🏀 Basketball</button>
-          <button onclick="switchAcademySport('performing_arts')" id="btn-sport-performing_arts" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🎭 Performing Arts</button>
-          <button onclick="switchAcademySport('creative_studio')" id="btn-sport-creative_studio" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🎨 Creative Studio</button>
-          <button onclick="switchAcademySport('wellness')" id="btn-sport-wellness" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🌿 Holistic Wellness</button>
-          <button onclick="switchAcademySport('swimming')" id="btn-sport-swimming" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🏊 Swimming</button>
-          <button onclick="switchAcademySport('football')" id="btn-sport-football" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">⚽ Football</button>
-          <button onclick="switchAcademySport('martial_arts')" id="btn-sport-martial_arts" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🥋 Martial Arts / Dojo</button>
-        </div>
-      </div>
-
-      <!-- DYNAMIC PREVIEW DISPLAY -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        
-        <!-- Left Image -->
-        <div class="lg:col-span-6 rounded-xl overflow-hidden border border-black/10 relative h-80 bg-neutral-100">
-          <img id="sport-img" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80" alt="Institute Activity" class="w-full h-full object-cover" />
-          <div class="absolute top-3 left-3 bg-black text-brand-lime text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-black" id="sport-label">
-            MULTI-SPORT & SOCIAL CLUB
-          </div>
-        </div>
-
-        <!-- Right Digital Dashboard Block -->
-        <div class="lg:col-span-6 space-y-4">
-          <div class="p-5 rounded-xl border border-black/10 bg-neutral-50 space-y-3">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest block" id="sport-app-name">ROYAL PALMS SPORTS & COUNTRY CLUB</span>
-                <h4 class="font-display font-bold text-2xl text-black" id="sport-headline">One digital home for your entire club.</h4>
-              </div>
-              <span class="px-2.5 py-1 bg-black text-brand-lime text-[10px] font-mono font-bold rounded-full">● LIVE ACCESS</span>
-            </div>
-
-            <!-- Main Feature Card -->
-            <div class="p-3.5 bg-white rounded-lg border border-black/10 space-y-1">
-              <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider block" id="card-main-label">INTEGRATED SPORTS & DISCIPLINES</span>
-              <strong class="text-base text-black block" id="card-main-title">Badminton • Tennis • Swimming • Squash • Gym</strong>
-              <span class="text-xs text-neutral-600 block" id="card-main-detail">Members switch disciplines with one digital passport and membership pass</span>
-            </div>
-
-            <!-- Facilities Access Block -->
-            <div class="p-3.5 bg-white rounded-lg border border-black/10 space-y-1.5" id="facility-addon-box">
-              <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider block" id="card-facility-label">CLUB AMENITIES & LEISURE BOOKINGS</span>
-              <div class="grid grid-cols-3 gap-2 text-center text-xs font-medium" id="card-facilities-grid">
-                <div class="p-1.5 rounded bg-neutral-50 border border-black/5">☕ Clubhouse Cafe</div>
-                <div class="p-1.5 rounded bg-neutral-50 border border-black/5">🏋️ Strength Gym</div>
-                <div class="p-1.5 rounded bg-neutral-50 border border-black/5">📖 Lounge / Library</div>
-              </div>
-            </div>
-
-            <!-- 2 Mini Stats -->
-            <div class="grid grid-cols-2 gap-3">
-              <div class="p-3 bg-white rounded-lg border border-black/10">
-                <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase block" id="card-mini1-label">MEMBERS ACTIVE TODAY</span>
-                <strong class="text-sm text-black block" id="card-mini1-title">310 Check-ins</strong>
-                <span class="text-xs text-neutral-500" id="card-mini1-detail">Across 4 sports courts</span>
-              </div>
-              <div class="p-3 bg-white rounded-lg border border-black/10">
-                <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase block" id="card-mini2-label">FACILITY CAPACITY</span>
-                <strong class="text-sm text-black block" id="card-mini2-title">84% Booked</strong>
-                <span class="text-xs text-neutral-500" id="card-mini2-detail">Court booking active</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ================= PANEL 2: REVENUE, DUES & WHATSAPP DESK ================= -->
-    <div id="panel-admin-ops" class="view-panel p-6 sm:p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
-      
-      <div class="pb-4 border-b border-black/10 space-y-1">
-        <h3 class="font-bold text-xl text-black">Instant Fees & Automated WhatsApp Broadcasts</h3>
-        <p class="text-xs text-neutral-600">See who has paid in seconds, and message parents directly without saving numbers manually.</p>
-      </div>
-
-      <!-- 3 Metrics Highlights -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
-          <span class="text-xs font-medium text-neutral-500 block">Total Monthly Fees Collected</span>
-          <strong class="text-2xl font-black text-black">₹4,82,500</strong>
-          <span class="text-[11px] text-neutral-500 block mt-1 font-mono">94% collected for current term</span>
-        </div>
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
-          <span class="text-xs font-medium text-neutral-500 block">Pending Fee Accounts</span>
-          <strong class="text-2xl font-black text-black">2 Members</strong>
-          <span class="text-[11px] text-neutral-500 block mt-1 font-mono">₹4,300 outstanding balance</span>
-        </div>
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
-          <span class="text-xs font-medium text-neutral-500 block">Average Attendance</span>
-          <strong class="text-2xl font-black text-black">94.2%</strong>
-          <span class="text-[11px] text-neutral-500 block mt-1 font-mono">Across all active batches</span>
-        </div>
-      </div>
-
-      <!-- Live Interactive WhatsApp Dispatcher -->
-      <div class="p-5 rounded-xl border border-black/10 bg-neutral-50 space-y-4">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <strong class="text-sm text-black block">Send Direct WhatsApp Broadcast</strong>
-            <span class="text-xs text-neutral-500">Pick who should receive this update on their phone:</span>
-          </div>
-          <span class="px-2.5 py-1 bg-black text-brand-lime text-[10px] font-mono font-bold rounded">100% FREE • ₹0 API COST</span>
-        </div>
-
-        <!-- Target Audience Filters -->
-        <div class="flex flex-wrap gap-2">
-          <button onclick="setAudience('all', this)" class="px-3 py-1.5 rounded bg-black text-white text-xs font-bold target-aud-btn cursor-pointer">All Active Enrollees (142)</button>
-          <button onclick="setAudience('due', this)" class="px-3 py-1.5 rounded bg-white border border-black/20 text-neutral-700 text-xs font-medium target-aud-btn hover:border-black cursor-pointer">Pending Dues Only (2)</button>
-          <button onclick="setAudience('u16', this)" class="px-3 py-1.5 rounded bg-white border border-black/20 text-neutral-700 text-xs font-medium target-aud-btn hover:border-black cursor-pointer">Grading & Showcase Batch (18)</button>
-        </div>
-
-        <textarea id="broadcast-msg" rows="3" class="w-full p-3 bg-white border border-black/20 rounded-lg text-xs text-black font-mono focus:outline-none focus:border-black" placeholder="Type your WhatsApp announcement...">🚨 SCHEDULE UPDATE | CLUB CONSOLE&#10;&#10;Today's evening session and belt testing has been moved to the indoor Main Dojo at 5:00 PM. See you on the mat! 🥋</textarea>
-
-        <button onclick="dispatchWhatsAppDemo()" class="px-5 py-3 rounded-lg bg-black text-brand-lime text-xs font-bold hover:bg-neutral-900 transition-all flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
-          <i data-lucide="send" class="w-4 h-4"></i>
-          <span>Open in WhatsApp & Send to Group</span>
-        </button>
-      </div>
-
-    </div>
-
-    <!-- ================= PANEL 3: VENUES, EVENTS & ALBUMS ================= -->
-    <div id="panel-venues-events" class="view-panel p-6 sm:p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
-      
-      <div class="pb-4 border-b border-black/10 space-y-1">
-        <h3 class="font-bold text-xl text-black">Venues, Class Schedules & Photo Vault</h3>
-        <p class="text-xs text-neutral-600">Everything parents and enrollees look for: studio locations, weekly batch times, and high-res event galleries.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
-        <!-- Venue Card 1 -->
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
-          <div class="flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-4 h-4 text-black"></i>
-            <strong class="text-sm text-black">Central Academy Complex</strong>
-          </div>
-          <p class="text-xs text-neutral-600">Main City Campus • 3 Indoor Studios</p>
-          <div class="pt-2 border-t border-black/10 flex justify-between text-[11px]">
-            <span class="font-semibold text-black">3 Weekly Batches</span>
-            <span class="text-neutral-500">Ages 6-18</span>
-          </div>
-        </div>
-
-        <!-- Venue Card 2 -->
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
-          <div class="flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-4 h-4 text-black"></i>
-            <strong class="text-sm text-black">South District Studio</strong>
-          </div>
-          <p class="text-xs text-neutral-600">Riverside Campus • Acoustic Hall & Pool</p>
-          <div class="pt-2 border-t border-black/10 flex justify-between text-[11px]">
-            <span class="font-semibold text-black">4 Weekly Batches</span>
-            <span class="text-neutral-500">Youth & Adults</span>
-          </div>
-        </div>
-
-        <!-- Venue Card 3 -->
-        <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
-          <div class="flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-4 h-4 text-black"></i>
-            <strong class="text-sm text-black">North Creative Hub</strong>
-          </div>
-          <p class="text-xs text-neutral-600">Cultural Zone • Art Loft & Sound Lab</p>
-          <div class="pt-2 border-t border-black/10 flex justify-between text-[11px]">
-            <span class="font-semibold text-black">2 Weekly Batches</span>
-            <span class="text-neutral-500">Ages 10-Adult</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Photo Album Gallery Preview -->
-      <div class="space-y-3 pt-2">
-        <div class="flex justify-between items-center">
-          <strong class="text-sm text-black">Recitals, Tournaments & Studio Albums</strong>
-          <span class="text-xs text-neutral-500 font-mono">10+ Verified Albums</span>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-1 hover:border-black/30 transition-all cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-black text-brand-lime flex items-center justify-center mx-auto mb-2"><i data-lucide="trophy" class="w-4 h-4"></i></div>
-            <strong class="block text-black">Annual Showcase '26</strong>
-            <span class="text-[11px] text-neutral-500 font-mono">42 Photos</span>
-          </div>
-
-          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-1 hover:border-black/30 transition-all cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-black text-brand-lime flex items-center justify-center mx-auto mb-2"><i data-lucide="sun" class="w-4 h-4"></i></div>
-            <strong class="block text-black">Summer Intensive '26</strong>
-            <span class="text-[11px] text-neutral-500 font-mono">112 Photos</span>
-          </div>
-
-          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-1 hover:border-black/30 transition-all cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-black text-brand-lime flex items-center justify-center mx-auto mb-2"><i data-lucide="video" class="w-4 h-4"></i></div>
-            <strong class="block text-black">Exhibition Reels</strong>
-            <span class="text-[11px] text-neutral-500 font-mono">14 Clips</span>
-          </div>
-
-          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-1 hover:border-black/30 transition-all cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-black text-brand-lime flex items-center justify-center mx-auto mb-2"><i data-lucide="award" class="w-4 h-4"></i></div>
-            <strong class="block text-black">Festival Gala '25</strong>
-            <span class="text-[11px] text-neutral-500 font-mono">95 Photos</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ================= WHY APPFORGE (OPERATIONAL BACKEND SECTION) ================= -->
-  <section id="why-appforge" class="max-w-6xl mx-auto px-6 py-16 border-t border-black/10 space-y-12">
-    
-    <div class="max-w-3xl space-y-3">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-brand-lime font-mono text-[10px] font-bold uppercase tracking-wider">
-        THE APPFORGE DIFFERENCE
-      </span>
-      <h2 class="font-display font-black text-3xl sm:text-5xl text-black tracking-tight leading-tight">
-        Anyone can generate a web page.<br />
-        <span class="underline decoration-brand-lime decoration-4 underline-offset-4">AppForge runs your actual business.</span>
-      </h2>
-      <p class="text-neutral-600 text-sm sm:text-base leading-relaxed">
-        Beautiful design is table stakes. AppForge combines high-converting storefronts with the backend infrastructure, payment pipelines, and vertical workflows you need to scale.
+      <h1 class="font-display font-black text-3xl leading-tight">
+        Run your entire academy in <span class="underline decoration-brand-lime decoration-4 underline-offset-2">one place</span>.
+      </h1>
+      <p class="text-neutral-600 text-xs leading-relaxed max-w-sm mx-auto">
+        Track fee payments, dispatch 1-click WhatsApp alerts, and manage student schedules without spreadsheet chaos.
       </p>
-    </div>
+      <div class="pt-2 flex flex-col gap-2">
+        <a href="#pricing-mob" class="w-full py-3 rounded-xl bg-black text-brand-lime text-xs font-bold shadow-sm">
+          Start 30-Day Free Trial →
+        </a>
+        <a href="#demo-mob" class="w-full py-2.5 rounded-xl border border-black/15 text-xs font-semibold text-neutral-700">
+          Explore Live Preview ↓
+        </a>
+      </div>
+    </section>
 
-    <!-- 3 PILLARS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 flex flex-col justify-between">
-        <div class="space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-mono font-bold">01</div>
-          <h3 class="font-bold text-lg text-black">Not just a pretty website. An end-to-end operating system.</h3>
-          <p class="text-xs text-neutral-600 leading-relaxed">
-            Stop stitching together disconnected tools. From automated scheduling and dynamic inventory to tax-compliant checkouts, AppForge handles the heavy lifting behind the screen.
-          </p>
+    <!-- Mobile Value Chips -->
+    <section class="px-4 py-3">
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50/70">
+          <i data-lucide="receipt" class="w-4 h-4 mx-auto mb-1 text-black"></i>
+          <strong class="text-[11px] block text-black">Live Dues</strong>
+          <span class="text-[9px] text-neutral-500">Auto receipts</span>
         </div>
-        <span class="text-[11px] font-mono font-bold text-neutral-400 block pt-4 border-t border-black/10">
-          "Full-stack power without the DevOps headache."
-        </span>
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50/70">
+          <i data-lucide="message-circle" class="w-4 h-4 mx-auto mb-1 text-black"></i>
+          <strong class="text-[11px] block text-black">WhatsApp</strong>
+          <span class="text-[9px] text-neutral-500">1-click alerts</span>
+        </div>
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50/70">
+          <i data-lucide="calendar" class="w-4 h-4 mx-auto mb-1 text-black"></i>
+          <strong class="text-[11px] block text-black">Schedules</strong>
+          <span class="text-[9px] text-neutral-500">Parent portal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Interactive Preview -->
+    <section id="demo-mob" class="px-4 py-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-400">LIVE PREVIEW</span>
+        <span class="text-[10px] font-mono bg-black text-brand-lime px-2 py-0.5 rounded">● INTERACTIVE</span>
       </div>
 
-      <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 flex flex-col justify-between">
-        <div class="space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-mono font-bold">02</div>
-          <h3 class="font-bold text-lg text-black">The visual layer is only 10% of the job.</h3>
-          <p class="text-xs text-neutral-600 leading-relaxed">
-            AppForge provides the other 90%: secure hosting, integrated CRM, localized payments, and autonomous workflow automations built specifically for creators, service pros, and SMBs.
-          </p>
-        </div>
-        <span class="text-[11px] font-mono font-bold text-neutral-400 block pt-4 border-t border-black/10">
-          "Your storefront, your checkout, your backend—all under one roof."
-        </span>
-      </div>
-
-      <div class="p-6 rounded-2xl border-2 border-black bg-black text-white space-y-3 flex flex-col justify-between shadow-lg">
-        <div class="space-y-3">
-          <div class="w-10 h-10 rounded-xl bg-brand-lime text-black flex items-center justify-center font-mono font-black">03</div>
-          <h3 class="font-bold text-lg text-white">Built for operations, not just impressions.</h3>
-          <p class="text-xs text-neutral-300 leading-relaxed">
-            Built from day one to eliminate administrative drag, consolidate payment tracking, and give founders total visibility across every customer interaction.
-          </p>
-        </div>
-        <span class="text-[11px] font-mono font-bold text-brand-lime block pt-4 border-t border-neutral-800">
-          "Where front-end elegance meets backend muscle."
-        </span>
-      </div>
-
-    </div>
-
-    <!-- VALUE PROPOSITIONS STRIP -->
-    <div class="p-8 rounded-3xl border border-black/10 bg-neutral-50 grid grid-cols-1 md:grid-cols-3 gap-8">
-      
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <i data-lucide="server" class="w-4 h-4 text-black"></i>
-          <strong class="text-sm font-bold text-black">Mission-Critical Backend</strong>
-        </div>
-        <p class="text-xs text-neutral-600 leading-relaxed">
-          Enterprise-grade uptime, auto-managed SSL, edge caching, and automated sales-tax compliance out of the box.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <i data-lucide="git-merge" class="w-4 h-4 text-black"></i>
-          <strong class="text-sm font-bold text-black">Native Vertical Workflows</strong>
-        </div>
-        <p class="text-xs text-neutral-600 leading-relaxed">
-          Integrated booking, gated client portals, and recurring subscriptions without brittle third-party plugins.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <i data-lucide="sliders" class="w-4 h-4 text-black"></i>
-          <strong class="text-sm font-bold text-black">Frictionless Day-2 Management</strong>
-        </div>
-        <p class="text-xs text-neutral-600 leading-relaxed">
-          Update pricing, launch automated email flows, and track revenue from a single, unified control plane.
-        </p>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ================= STREAMLINED PRICING SECTION ================= -->
-  <section id="pricing" class="max-w-6xl mx-auto px-6 py-14 space-y-8 border-t border-black/10">
-    <div class="text-center space-y-2">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-limeLight border border-brand-lime text-xs font-mono font-bold text-black uppercase">
-        Simple, Transparent Plans
-      </span>
-      <h2 class="font-display font-black text-3xl sm:text-4xl text-black">
-        30 days free. Then from ₹4,999/month.
-      </h2>
-      <p class="text-sm text-neutral-600 max-w-lg mx-auto">
-        All plans include 100% free onboarding, full setup assistance, and automated data migration.
-      </p>
-    </div>
-
-    <!-- 3 SIMPLIFIED PRICING CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-      
-      <!-- START PLAN -->
-      <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-display font-bold text-xl text-black">START</h3>
-            <p class="text-xs text-neutral-500 mt-0.5">For single studios, academies & emerging clubs</p>
-          </div>
-          <div>
-            <span class="text-3xl font-black text-black font-mono">₹4,999</span>
-            <span class="text-xs text-neutral-500">/ month</span>
-            <span class="block text-[11px] font-bold text-emerald-600 mt-0.5">30-day free trial included</span>
-          </div>
-          <ul class="space-y-2.5 text-xs text-neutral-700 pt-2 border-t border-black/10">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Complete setup & student data migration</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Student & parent directory</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Batches, scheduling & attendance</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Automated fee collection & receipts</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Direct WhatsApp alerts & notifications</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Instructor / Coach Mode access</li>
-          </ul>
-        </div>
-        <button onclick="alert('Starting 30-day trial for START plan!')" class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold hover:bg-neutral-800 transition-all cursor-pointer">
-          Start Free Trial
+      <div class="grid grid-cols-3 gap-1.5 bg-neutral-100 p-1 rounded-xl border border-black/10">
+        <button onclick="switchProduct('academy', 'mob')" id="tab-academy-mob" class="tab-btn active py-2 rounded-lg text-center text-[10px] font-bold cursor-pointer transition-all">
+          1. Academy
+        </button>
+        <button onclick="switchProduct('admin-ops', 'mob')" id="tab-admin-ops-mob" class="tab-btn py-2 rounded-lg text-center text-[10px] font-bold cursor-pointer transition-all">
+          2. Fees & Chat
+        </button>
+        <button onclick="switchProduct('venues-events', 'mob')" id="tab-venues-events-mob" class="tab-btn py-2 rounded-lg text-center text-[10px] font-bold cursor-pointer transition-all">
+          3. Venues
         </button>
       </div>
 
-      <!-- GROW PLAN (FEATURED) -->
-      <div class="p-6 rounded-2xl border-2 border-black bg-neutral-900 text-white flex flex-col justify-between space-y-6 shadow-xl relative">
-        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-brand-lime text-black font-mono text-[10px] font-black uppercase tracking-wider">
-          MOST POPULAR ⭐
+      <!-- Mobile Panel 1: Academy -->
+      <div id="panel-academy-mob" class="view-panel active p-4 rounded-2xl border border-black/15 bg-white space-y-4 shadow-sm">
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          <button onclick="switchAcademySport('multisport', 'mob')" id="btn-sport-multisport-mob" class="category-btn active px-3 py-1.5 rounded-lg border border-black bg-black text-white text-[11px] font-semibold whitespace-nowrap">🏢 Multi-Sport</button>
+          <button onclick="switchAcademySport('basketball', 'mob')" id="btn-sport-basketball-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🏀 Basketball</button>
+          <button onclick="switchAcademySport('performing_arts', 'mob')" id="btn-sport-performing_arts-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🎭 Arts</button>
+          <button onclick="switchAcademySport('creative_studio', 'mob')" id="btn-sport-creative_studio-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🎨 Studio</button>
+          <button onclick="switchAcademySport('wellness', 'mob')" id="btn-sport-wellness-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🌿 Wellness</button>
+          <button onclick="switchAcademySport('swimming', 'mob')" id="btn-sport-swimming-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🏊 Swimming</button>
+          <button onclick="switchAcademySport('football', 'mob')" id="btn-sport-football-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">⚽ Football</button>
+          <button onclick="switchAcademySport('martial_arts', 'mob')" id="btn-sport-martial_arts-mob" class="category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap">🥋 Combat</button>
         </div>
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-display font-bold text-xl text-white">GROW</h3>
-            <p class="text-xs text-neutral-400 mt-0.5">For growing institutes wanting modern digital presence</p>
+
+        <div class="rounded-xl border border-black/10 bg-neutral-50 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] font-mono font-bold text-neutral-500 uppercase tracking-wide" id="sport-app-name-mob">ROYAL PALMS SPORTS CLUB</span>
+            <span class="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">LIVE</span>
           </div>
-          <div>
-            <span class="text-3xl font-black text-brand-lime font-mono">₹9,999</span>
-            <span class="text-xs text-neutral-400">/ month</span>
-            <span class="block text-[11px] font-bold text-brand-lime mt-0.5">30-day free trial included</span>
+          <div class="p-3 bg-white rounded-lg border border-black/10 space-y-1">
+            <span class="text-[9px] font-mono font-bold text-neutral-400 uppercase" id="card-main-label-mob">INTEGRATED DISCIPLINES</span>
+            <strong class="text-xs text-black block leading-snug" id="card-main-title-mob">Badminton • Tennis • Swimming • Squash</strong>
+            <span class="text-[10px] text-neutral-500 block" id="card-main-detail-mob">Unified digital pass across facilities</span>
           </div>
-          <ul class="space-y-2.5 text-xs text-neutral-300 pt-2 border-t border-neutral-700">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> <strong>Everything in Start</strong></li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Online admissions & self-enrollment</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Custom website & public class schedule</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Branded digital student report cards</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Automated fee follow-up WhatsApp pings</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Advanced business revenue analytics</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-lime shrink-0"></i> Priority WhatsApp support desk</li>
-          </ul>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="p-2.5 bg-white rounded-lg border border-black/10">
+              <span class="text-[8px] font-mono text-neutral-400 block uppercase" id="card-mini1-label-mob">ACTIVE TODAY</span>
+              <strong class="text-xs text-black block" id="card-mini1-title-mob">310 Check-ins</strong>
+            </div>
+            <div class="p-2.5 bg-white rounded-lg border border-black/10">
+              <span class="text-[8px] font-mono text-neutral-400 block uppercase" id="card-mini2-label-mob">CAPACITY</span>
+              <strong class="text-xs text-black block" id="card-mini2-title-mob">84% Booked</strong>
+            </div>
+          </div>
         </div>
-        <button onclick="alert('Starting 30-day trial for GROW plan!')" class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black hover:bg-brand-limeHover transition-all cursor-pointer shadow-md">
-          Start Free Trial
+      </div>
+
+      <!-- Mobile Panel 2: Revenue & WhatsApp -->
+      <div id="panel-admin-ops-mob" class="view-panel p-4 rounded-2xl border border-black/15 bg-white space-y-4 shadow-sm">
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
+            <span class="text-[9px] font-medium text-neutral-500 block">Fees Collected</span>
+            <strong class="text-lg font-black text-black">₹4,82,500</strong>
+            <span class="text-[9px] text-emerald-600 block font-mono">94% Compliant</span>
+          </div>
+          <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
+            <span class="text-[9px] font-medium text-neutral-500 block">Pending Dues</span>
+            <strong class="text-lg font-black text-black">2 Members</strong>
+            <span class="text-[9px] text-neutral-500 block font-mono">₹4,300 balance</span>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl border border-black/10 bg-neutral-50 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <strong class="text-xs text-black">Direct WhatsApp Broadcast</strong>
+            <span class="text-[8px] font-mono bg-black text-brand-lime px-1.5 py-0.5 rounded">₹0 API COST</span>
+          </div>
+          <textarea id="broadcast-msg-mob" rows="2" class="w-full p-2.5 bg-white border border-black/20 rounded-lg text-[11px] text-black font-mono focus:outline-none">🚨 SCHEDULE UPDATE | CLUB CONSOLE&#10;Session moved to indoor Main Dojo at 5:00 PM today. 🥋</textarea>
+          <button onclick="dispatchWhatsAppDemo('mob')" class="w-full py-2.5 rounded-lg bg-black text-brand-lime text-xs font-bold flex items-center justify-center gap-1.5">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>Test WhatsApp Broadcast</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Panel 3: Venues -->
+      <div id="panel-venues-events-mob" class="view-panel p-4 rounded-2xl border border-black/15 bg-white space-y-3 shadow-sm">
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50 flex items-center justify-between">
+          <div>
+            <strong class="text-xs text-black block">Central Academy Complex</strong>
+            <span class="text-[10px] text-neutral-500">Main Campus • 3 Studios</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">3 Batches</span>
+        </div>
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50 flex items-center justify-between">
+          <div>
+            <strong class="text-xs text-black block">South District Studio</strong>
+            <span class="text-[10px] text-neutral-500">Riverside • Acoustic Hall</span>
+          </div>
+          <span class="text-[10px] font-bold font-mono">4 Batches</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Pricing -->
+    <section id="pricing-mob" class="px-4 py-8 border-t border-black/10 space-y-4">
+      <div class="text-center space-y-1">
+        <span class="text-[10px] font-mono font-bold uppercase text-neutral-400 tracking-wider">PRICING</span>
+        <h2 class="font-display font-black text-2xl text-black">30 Days Free. Cancel Anytime.</h2>
+      </div>
+
+      <div class="p-5 rounded-2xl border-2 border-black bg-neutral-900 text-white space-y-4 shadow-lg">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[9px] font-mono bg-brand-lime text-black px-2 py-0.5 rounded font-black uppercase">MOST POPULAR</span>
+            <h3 class="font-display font-bold text-xl text-white mt-1">GROW</h3>
+            <p class="text-[11px] text-neutral-400">Complete Academy Operating System</p>
+          </div>
+          <div class="text-right">
+            <span class="text-2xl font-black text-brand-lime font-mono">₹9,999</span>
+            <span class="text-[10px] text-neutral-400 block">/month</span>
+          </div>
+        </div>
+        <ul class="space-y-1.5 text-xs text-neutral-300 pt-3 border-t border-neutral-800">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Auto fee follow-ups on WhatsApp</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> 1-tap student attendance & rosters</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Free onboarding & data migration</li>
+        </ul>
+        <button onclick="alert('Starting 30-day trial for GROW plan!')" class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black shadow-md">
+          Start 30-Day Free Trial →
         </button>
       </div>
 
-      <!-- PRO PLAN -->
-      <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-display font-bold text-xl text-black">PRO</h3>
-            <p class="text-xs text-neutral-500 mt-0.5">For multi-sport clubs & multi-branch institutes</p>
-          </div>
-          <div>
-            <span class="text-3xl font-black text-black font-mono">₹19,999+</span>
-            <span class="text-xs text-neutral-500">/ month</span>
-            <span class="block text-[11px] font-bold text-emerald-600 mt-0.5">30-day free trial included</span>
-          </div>
-          <ul class="space-y-2.5 text-xs text-neutral-700 pt-2 border-t border-black/10">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> <strong>Everything in Grow</strong></li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Multiple branches & campus management</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Multi-sport & facility booking engine</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Custom automated intake workflows</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Custom payment & accounting integrations</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-black shrink-0"></i> Dedicated account manager & on-site onboarding</li>
-          </ul>
+      <div class="grid grid-cols-2 gap-2 text-center text-xs">
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
+          <strong class="block text-black">START</strong>
+          <span class="font-mono text-neutral-500 font-bold">₹4,999/mo</span>
         </div>
-        <button onclick="alert('Contacting enterprise team for PRO plan!')" class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold hover:bg-neutral-800 transition-all cursor-pointer">
-          Talk to Team
-        </button>
+        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
+          <strong class="block text-black">PRO</strong>
+          <span class="font-mono text-neutral-500 font-bold">₹19,999/mo</span>
+        </div>
       </div>
+    </section>
 
-    </div>
-  </section>
+    <!-- Mobile Footer -->
+    <footer class="border-t border-black/10 py-4 text-center text-[10px] text-neutral-500">
+      Club Console by AppForge • 2026
+    </footer>
+  </div>
 
-  <!-- ================= ABOUT US (FOUNDER-LED & DIRECT) ================= -->
-  <section id="about" class="max-w-6xl mx-auto px-6 py-12 border-t border-black/10">
-    <div class="p-8 rounded-3xl border border-black/10 bg-neutral-50 flex flex-col md:flex-row gap-8 items-center justify-between">
-      
-      <div class="space-y-3 max-w-2xl">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-brand-lime font-mono text-[10px] font-bold uppercase tracking-wider">
-          About AppForge
-        </span>
-        <h3 class="font-display font-black text-2xl sm:text-3xl text-black">
-          Built close to the ground, crafted for academy & club owners.
-        </h3>
-        <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-          I started AppForge after watching passionate coaches, art instructors, and club managers drown in daily operational friction—spending late evenings chasing unpaid monthly fees, juggling fragmented WhatsApp groups, and wrestling with messy paper registers.
-        </p>
-        <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-          Club Console is built to be clean, fast, and radically simple. Every academy onboards with direct, personal setup assistance—so you can focus 100% on teaching and mentoring your students while the technology runs silently in the background.
-        </p>
-      </div>
-
-      <!-- Founder Quick Card -->
-      <div class="p-6 rounded-2xl bg-white border border-black/10 shadow-sm w-full md:w-72 shrink-0 text-center space-y-3">
-        <div class="w-14 h-14 rounded-2xl bg-black text-brand-lime font-mono font-bold text-xl flex items-center justify-center mx-auto shadow-sm">
-          ✦
+  <!-- ================================================================= -->
+  <!-- 2. DESKTOP VIEW (Visible on screens >= 768px)                      -->
+  <!-- ================================================================= -->
+  <div class="hidden md:block">
+    <!-- Desktop Header -->
+    <header class="border-b border-black/10 sticky top-0 bg-white/95 backdrop-blur-md z-30">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-black text-brand-lime flex items-center justify-center font-mono font-black text-lg border border-black shadow-sm">✦</div>
+          <div>
+            <span class="font-display font-black text-xl tracking-tight block leading-tight">CLUB CONSOLE</span>
+            <span class="text-[10px] tracking-widest text-black/60 uppercase font-semibold">BY APPFORGE</span>
+          </div>
         </div>
-        <div>
-          <strong class="text-sm text-black block font-sans">AppForge Engineering</strong>
-          <span class="text-[11px] text-neutral-500 font-mono block">Founder & Product Lead</span>
-        </div>
-        <div class="pt-2 border-t border-black/10">
-          <a href="mailto:founder@appforge.io" class="inline-flex items-center gap-1.5 text-xs font-semibold text-black hover:underline">
-            <i data-lucide="mail" class="w-3.5 h-3.5"></i>
-            <span>founder@appforge.io</span>
+        <div class="flex items-center space-x-6">
+          <a href="#demo" class="text-xs font-semibold text-black hover:text-neutral-600">Product Tour</a>
+          <a href="#why-appforge" class="text-xs font-semibold text-black hover:text-neutral-600">Why AppForge</a>
+          <a href="#pricing" class="text-xs font-semibold text-black hover:text-neutral-600">Pricing</a>
+          <a href="#about" class="text-xs font-semibold text-black hover:text-neutral-600">About</a>
+          <a href="#pricing" class="px-4 py-2 rounded-lg bg-black text-brand-lime text-xs font-bold border border-black hover:bg-neutral-900 transition-all shadow-sm">
+            Start 30-Day Free Trial
           </a>
         </div>
       </div>
+    </header>
 
-    </div>
-  </section>
+    <!-- Desktop Hero -->
+    <section class="max-w-6xl mx-auto px-6 pt-14 pb-8 text-center space-y-4">
+      <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black text-white text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></span>
+        Zero IT Skills Needed • Built for Academies, Studios & Multi-Sport Clubs
+      </span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-black tracking-tight max-w-4xl mx-auto leading-tight">
+        Stop wasting hours on paperwork.<br />
+        Run your entire academy in <span class="underline decoration-brand-lime decoration-4 underline-offset-4">one place</span>.
+      </h1>
+      <p class="text-neutral-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        Club Console by AppForge is the simple operating system for sports clubs, performing arts schools, creative studios, martial arts dojos, and wellness centers. Track fee payments, send direct WhatsApp reminders, and showcase your venues, schedules, amenities, and photo galleries effortlessly.
+      </p>
+    </section>
 
-  <!-- ================= FINAL CALL TO ACTION ================= -->
-  <section class="max-w-6xl mx-auto px-6 py-12 text-center space-y-4">
-    <h2 class="font-display font-black text-3xl sm:text-4xl text-black">
-      Ready to upgrade your institute with Club Console?
-    </h2>
-    <p class="text-sm text-neutral-600 max-w-xl mx-auto">
-      Get your academy, studio, or sports club fully set up in under 15 minutes. We help you import all your students, schedules, and past records for free.
-    </p>
-    <div class="pt-2">
-      <button onclick="alert('Starting your 30-day free trial on Club Console...')" class="px-7 py-3.5 rounded-xl bg-black text-brand-lime text-sm font-bold hover:bg-neutral-900 shadow-md hover:shadow-lg transition-all cursor-pointer">
-        Start Your 30-Day Free Trial →
-      </button>
-    </div>
-  </section>
+    <!-- Desktop Benefits -->
+    <section class="max-w-6xl mx-auto px-6 py-6">
+      <div class="grid grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
+            <i data-lucide="receipt" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-lg text-black">Instant Fees & Revenue Tracking</h3>
+          <p class="text-sm text-neutral-600 leading-relaxed">Say goodbye to lost registers and confusing Excel sheets. Know exactly who has paid for the month, whose dues are overdue, and track collected club revenue in real-time.</p>
+        </div>
+        <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-lg text-black">Targeted WhatsApp Broadcasts</h3>
+          <p class="text-sm text-neutral-600 leading-relaxed">Send weather alerts, schedule changes, or payment pings directly to all parents, specific training batches, or only fee-pending members in 1 click at ₹0 extra API cost.</p>
+        </div>
+        <div class="p-6 rounded-2xl border border-black/10 bg-neutral-50/70 space-y-3 hover:border-black/30 transition-all">
+          <div class="w-10 h-10 rounded-xl bg-black text-brand-lime flex items-center justify-center font-bold">
+            <i data-lucide="building-2" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-bold text-lg text-black">One-Stop Digital Hub</h3>
+          <p class="text-sm text-neutral-600 leading-relaxed">Showcase your campuses, multiple class disciplines, studio facilities, high-res photo albums, and digital student report cards under your own custom brand.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-black/10 py-6 text-center text-xs text-neutral-500">
-    Club Console by AppForge • Complete Club, Studio & Academy Operating System
-  </footer>
+    <!-- Desktop Product Demo -->
+    <section id="demo" class="max-w-6xl mx-auto px-6 py-10 space-y-6">
+      <div class="text-center space-y-1">
+        <span class="text-xs font-mono font-bold uppercase tracking-widest text-neutral-400">INTERACTIVE PREVIEW</span>
+        <h2 class="font-display font-black text-3xl sm:text-4xl text-black">See how Club Console works for your institute</h2>
+      </div>
 
-  <!-- ================= JAVASCRIPT STATE ENGINE ================= -->
+      <div class="grid grid-cols-3 gap-3">
+        <button onclick="switchProduct('academy')" id="tab-academy" class="tab-btn active p-4 rounded-xl border text-left transition-all cursor-pointer">
+          <div class="flex items-center gap-2.5 mb-1">
+            <i data-lucide="graduation-cap" class="w-4 h-4 tab-icon"></i>
+            <strong class="text-sm font-bold">1. Academy & Student Hub</strong>
+          </div>
+          <span class="text-xs">Sports, studios, arts & wellness</span>
+        </button>
+        <button onclick="switchProduct('admin-ops')" id="tab-admin-ops" class="tab-btn p-4 rounded-xl border text-left transition-all cursor-pointer hover:border-black">
+          <div class="flex items-center gap-2.5 mb-1">
+            <i data-lucide="wallet" class="w-4 h-4 tab-icon"></i>
+            <strong class="text-sm font-bold">2. Fees & WhatsApp Desk</strong>
+          </div>
+          <span class="text-xs">Zero-paperwork dues & messaging</span>
+        </button>
+        <button onclick="switchProduct('venues-events')" id="tab-venues-events" class="tab-btn p-4 rounded-xl border text-left transition-all cursor-pointer hover:border-black">
+          <div class="flex items-center gap-2.5 mb-1">
+            <i data-lucide="calendar" class="w-4 h-4 tab-icon"></i>
+            <strong class="text-sm font-bold">3. Venues, Events & Albums</strong>
+          </div>
+          <span class="text-xs">Campuses, showcases & photo vault</span>
+        </button>
+      </div>
+
+      <!-- Desktop Panel 1 -->
+      <div id="panel-academy" class="view-panel active p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
+        <div class="flex items-center justify-between gap-4 pb-4 border-b border-black/10">
+          <div>
+            <h3 class="font-bold text-xl text-black">Choose your academy or institute type</h3>
+            <p class="text-xs text-neutral-500">Club Console instantly reorganizes schedules, batch intakes, and member enrollment workflows.</p>
+          </div>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="switchAcademySport('multisport')" id="btn-sport-multisport" class="category-btn active px-3 py-2 rounded-lg border border-black bg-black text-white text-xs font-semibold cursor-pointer text-center">🏢 Multi-Sport Club</button>
+            <button onclick="switchAcademySport('basketball')" id="btn-sport-basketball" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🏀 Basketball</button>
+            <button onclick="switchAcademySport('performing_arts')" id="btn-sport-performing_arts" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🎭 Performing Arts</button>
+            <button onclick="switchAcademySport('creative_studio')" id="btn-sport-creative_studio" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🎨 Creative Studio</button>
+            <button onclick="switchAcademySport('wellness')" id="btn-sport-wellness" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🌿 Holistic Wellness</button>
+            <button onclick="switchAcademySport('swimming')" id="btn-sport-swimming" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🏊 Swimming</button>
+            <button onclick="switchAcademySport('football')" id="btn-sport-football" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">⚽ Football</button>
+            <button onclick="switchAcademySport('martial_arts')" id="btn-sport-martial_arts" class="category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center">🥋 Martial Arts / Dojo</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-6 items-center">
+          <div class="col-span-6 rounded-xl overflow-hidden border border-black/10 relative h-80 bg-neutral-100">
+            <img id="sport-img" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80" alt="Activity" class="w-full h-full object-cover" />
+            <div class="absolute top-3 left-3 bg-black text-brand-lime text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-black" id="sport-label">
+              MULTI-SPORT & SOCIAL CLUB
+            </div>
+          </div>
+          <div class="col-span-6 space-y-4">
+            <div class="p-5 rounded-xl border border-black/10 bg-neutral-50 space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest block" id="sport-app-name">ROYAL PALMS SPORTS & COUNTRY CLUB</span>
+                  <h4 class="font-display font-bold text-2xl text-black" id="sport-headline">One digital home for your entire club.</h4>
+                </div>
+                <span class="px-2.5 py-1 bg-black text-brand-lime text-[10px] font-mono font-bold rounded-full">● LIVE ACCESS</span>
+              </div>
+              <div class="p-3.5 bg-white rounded-lg border border-black/10 space-y-1">
+                <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider block" id="card-main-label">INTEGRATED SPORTS & DISCIPLINES</span>
+                <strong class="text-base text-black block" id="card-main-title">Badminton • Tennis • Swimming • Squash • Gym</strong>
+                <span class="text-xs text-neutral-600 block" id="card-main-detail">Members switch disciplines with one digital passport and membership pass</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-white rounded-lg border border-black/10">
+                  <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase block" id="card-mini1-label">MEMBERS ACTIVE TODAY</span>
+                  <strong class="text-sm text-black block" id="card-mini1-title">310 Check-ins</strong>
+                  <span class="text-xs text-neutral-500" id="card-mini1-detail">Across 4 sports courts</span>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-black/10">
+                  <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase block" id="card-mini2-label">FACILITY CAPACITY</span>
+                  <strong class="text-sm text-black block" id="card-mini2-title">84% Booked</strong>
+                  <span class="text-xs text-neutral-500" id="card-mini2-detail">Court booking active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Panel 2: Fees -->
+      <div id="panel-admin-ops" class="view-panel p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
+        <div class="pb-4 border-b border-black/10 space-y-1">
+          <h3 class="font-bold text-xl text-black">Instant Fees & Automated WhatsApp Broadcasts</h3>
+          <p class="text-xs text-neutral-600">See who has paid in seconds, and message parents directly without saving numbers manually.</p>
+        </div>
+        <div class="grid grid-cols-3 gap-4 text-left">
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
+            <span class="text-xs font-medium text-neutral-500 block">Total Monthly Fees Collected</span>
+            <strong class="text-2xl font-black text-black">₹4,82,500</strong>
+            <span class="text-[11px] text-neutral-500 block mt-1 font-mono">94% collected for current term</span>
+          </div>
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
+            <span class="text-xs font-medium text-neutral-500 block">Pending Fee Accounts</span>
+            <strong class="text-2xl font-black text-black">2 Members</strong>
+            <span class="text-[11px] text-neutral-500 block mt-1 font-mono">₹4,300 outstanding balance</span>
+          </div>
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50">
+            <span class="text-xs font-medium text-neutral-500 block">Average Attendance</span>
+            <strong class="text-2xl font-black text-black">94.2%</strong>
+            <span class="text-[11px] text-neutral-500 block mt-1 font-mono">Across all active batches</span>
+          </div>
+        </div>
+        <div class="p-5 rounded-xl border border-black/10 bg-neutral-50 space-y-4">
+          <div class="flex items-center justify-between">
+            <strong class="text-sm text-black block">Send Direct WhatsApp Broadcast</strong>
+            <span class="px-2.5 py-1 bg-black text-brand-lime text-[10px] font-mono font-bold rounded">100% FREE • ₹0 API COST</span>
+          </div>
+          <textarea id="broadcast-msg" rows="3" class="w-full p-3 bg-white border border-black/20 rounded-lg text-xs text-black font-mono focus:outline-none">🚨 SCHEDULE UPDATE | CLUB CONSOLE&#10;&#10;Today's evening session and belt testing has been moved to the indoor Main Dojo at 5:00 PM. See you on the mat! 🥋</textarea>
+          <button onclick="dispatchWhatsAppDemo()" class="px-5 py-3 rounded-lg bg-black text-brand-lime text-xs font-bold hover:bg-neutral-900 transition-all flex items-center gap-2 cursor-pointer">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Open in WhatsApp & Send to Group</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop Panel 3: Venues -->
+      <div id="panel-venues-events" class="view-panel p-8 rounded-2xl border border-black/15 bg-white space-y-6 shadow-sm">
+        <div class="grid grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
+            <strong class="text-sm text-black block">Central Academy Complex</strong>
+            <p class="text-xs text-neutral-600">Main City Campus • 3 Indoor Studios</p>
+          </div>
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
+            <strong class="text-sm text-black block">South District Studio</strong>
+            <p class="text-xs text-neutral-600">Riverside Campus • Acoustic Hall & Pool</p>
+          </div>
+          <div class="p-4 rounded-xl border border-black/10 bg-neutral-50 space-y-2">
+            <strong class="text-sm text-black block">North Creative Hub</strong>
+            <p class="text-xs text-neutral-600">Cultural Zone • Art Loft & Sound Lab</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desktop Pricing -->
+    <section id="pricing" class="max-w-6xl mx-auto px-6 py-14 space-y-8 border-t border-black/10">
+      <div class="text-center space-y-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-limeLight border border-brand-lime text-xs font-mono font-bold text-black uppercase">
+          Simple, Transparent Plans
+        </span>
+        <h2 class="font-display font-black text-3xl sm:text-4xl text-black">30 days free. Then from ₹4,999/month.</h2>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
+          <div class="space-y-4">
+            <h3 class="font-display font-bold text-xl text-black">START</h3>
+            <span class="text-3xl font-black text-black font-mono">₹4,999<span class="text-xs text-neutral-500 font-normal">/mo</span></span>
+            <ul class="space-y-2 text-xs text-neutral-700">
+              <li>✓ Student & parent directory</li>
+              <li>✓ Automated fee collection & receipts</li>
+              <li>✓ Direct WhatsApp alerts</li>
+            </ul>
+          </div>
+          <button class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold">Start Free Trial</button>
+        </div>
+
+        <div class="p-6 rounded-2xl border-2 border-black bg-neutral-900 text-white flex flex-col justify-between space-y-6 shadow-xl">
+          <div class="space-y-4">
+            <h3 class="font-display font-bold text-xl text-white">GROW</h3>
+            <span class="text-3xl font-black text-brand-lime font-mono">₹9,999<span class="text-xs text-neutral-400 font-normal">/mo</span></span>
+            <ul class="space-y-2 text-xs text-neutral-300">
+              <li>✓ Everything in Start</li>
+              <li>✓ Branded student reports & portal</li>
+              <li>✓ Automated WhatsApp fee pings</li>
+            </ul>
+          </div>
+          <button class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black">Start Free Trial</button>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
+          <div class="space-y-4">
+            <h3 class="font-display font-bold text-xl text-black">PRO</h3>
+            <span class="text-3xl font-black text-black font-mono">₹19,999+<span class="text-xs text-neutral-500 font-normal">/mo</span></span>
+            <ul class="space-y-2 text-xs text-neutral-700">
+              <li>✓ Multi-branch & campus management</li>
+              <li>✓ Multi-sport booking engine</li>
+              <li>✓ Dedicated account manager</li>
+            </ul>
+          </div>
+          <button class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold">Talk to Team</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desktop Footer -->
+    <footer class="border-t border-black/10 py-6 text-center text-xs text-neutral-500">
+      Club Console by AppForge • Complete Club, Studio & Academy Operating System
+    </footer>
+  </div>
+
+  <!-- Shared Javascript Engine -->
   <script>
     lucide.createIcons();
 
-    // Data Engine for 8 Institute Types (Multi-Sport, Arts, Studios, Wellness, Combat & Sports)
     const ACADEMY_DATA = {
-      multisport: {
-        label: 'MULTI-SPORT & SOCIAL CLUB',
-        appName: 'ROYAL PALMS SPORTS & COUNTRY CLUB',
-        welcome: 'One digital home for your entire club.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'INTEGRATED SPORTS & DISCIPLINES',
-        mainTitle: 'Badminton • Tennis • Swimming • Squash • Gym',
-        mainDetail: 'Members switch disciplines with one digital passport and membership pass',
-        hasFacilities: true,
-        mini1Label: 'MEMBERS ACTIVE TODAY',
-        mini1Title: '310 Check-ins',
-        mini1Detail: 'Across 4 sports courts',
-        mini2Label: 'FACILITY CAPACITY',
-        mini2Title: '84% Booked',
-        mini2Detail: 'Court booking active'
-      },
-      basketball: {
-        label: 'BASKETBALL ACADEMY',
-        appName: 'SONICS BASKETBALL ACADEMY',
-        welcome: 'Game day is coming.',
-        image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'NEXT TOURNAMENT',
-        mainTitle: 'State Youth Championship',
-        mainDetail: '7 days to go • U16 State Squad • Socorro Arena',
-        hasFacilities: false,
-        mini1Label: "TODAY'S BATCH",
-        mini1Title: 'Cadets Training',
-        mini1Detail: '04:30 PM • 18 Attending',
-        mini2Label: 'ACTIVE ROSTER',
-        mini2Title: '142 Athletes',
-        mini2Detail: 'All batches verified'
-      },
-      performing_arts: {
-        label: 'PERFORMING ARTS & THEATRE ACADEMY',
-        appName: 'RHYTHM HOUSE DRAMA & DANCE',
-        welcome: 'From the rehearsal room to center stage.',
-        image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'UPCOMING PRODUCTION',
-        mainTitle: 'Annual Monsoon Musical Gala',
-        mainDetail: '14 days to go • Main Auditorium Stage • 180 RSVPs',
-        hasFacilities: false,
-        mini1Label: "TODAY'S REHEARSAL",
-        mini1Title: 'Contemporary & Drama',
-        mini1Detail: '05:30 PM • 28 Cast Members',
-        mini2Label: 'ACTIVE STUDENTS',
-        mini2Title: '94 Enrolled',
-        mini2Detail: 'Track recital milestones'
-      },
-      creative_studio: {
-        label: 'FINE ARTS & CERAMICS STUDIO',
-        appName: 'ARTISAN CLAY & CANVAS LOFT',
-        welcome: 'Where imagination takes shape.',
-        image: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'EXHIBITION & SALE',
-        mainTitle: 'Student Pottery & Canvas Showcase',
-        mainDetail: 'Next Weekend • Gallery Floor • 8 Workbench Stations',
-        hasFacilities: false,
-        mini1Label: "TODAY'S WORKSHOP",
-        mini1Title: 'Wheel Pottery & Glazing',
-        mini1Detail: '03:30 PM • 12 Artists',
-        mini2Label: 'STUDIO MATERIALS',
-        mini2Title: '100% Stocked',
-        mini2Detail: 'Easel & kiln slots locked'
-      },
-      wellness: {
-        label: 'HOLISTIC WELLNESS & SOUND SANCTUARY',
-        appName: 'PRANA SOUND & BREATH SANCTUARY',
-        welcome: 'Restore balance, stillness, and calm.',
-        image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'NEXT GROUP IMMERSION',
-        mainTitle: 'Tibetan Sound Bath & Breathwork',
-        mainDetail: 'Tomorrow 07:00 PM • 4 Mats Remaining • Silent Studio',
-        hasFacilities: false,
-        mini1Label: "TODAY'S THERAPIES",
-        mini1Title: '1-on-1 Sound Therapy',
-        mini1Detail: '6 Private Consultations',
-        mini2Label: 'SANCTUARY CAPACITY',
-        mini2Title: '92% Booked',
-        mini2Detail: 'Intake forms verified'
-      },
-      swimming: {
-        label: 'SWIMMING ACADEMY',
-        appName: 'BLUE CURRENT AQUATICS',
-        welcome: 'Pool & open water sessions.',
-        image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'NEXT MORNING SESSION',
-        mainTitle: 'Open Water Bambolim',
-        mainDetail: 'Tomorrow 06:30 AM • 22 Registered',
-        hasFacilities: false,
-        mini1Label: 'CONDITIONS',
-        mini1Title: '29°C Calm Water',
-        mini1Detail: 'Clear skies • Low wind',
-        mini2Label: 'ACTIVE SWIMMERS',
-        mini2Title: '38 Swimmers',
-        mini2Detail: 'Track lap timings'
-      },
-      football: {
-        label: 'FOOTBALL ACADEMY',
-        appName: 'NEXT KICK ACADEMY',
-        welcome: 'Match day is approaching.',
-        image: 'https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'UPCOMING MATCH',
-        mainTitle: 'Inter-Club Junior Cup',
-        mainDetail: 'Sunday 05:00 PM • Fatorda Ground',
-        hasFacilities: false,
-        mini1Label: "TODAY'S SESSION",
-        mini1Title: 'Tactical Squad Drill',
-        mini1Detail: '05:00 PM • 24 Present',
-        mini2Label: 'SEASON RECORD',
-        mini2Title: '8 Matches Played',
-        mini2Detail: 'Goal leaderboard live'
-      },
-      martial_arts: {
-        label: 'MARTIAL ARTS & COMBAT DOJO',
-        appName: 'VALOR MARTIAL ARTS & BJJ',
-        welcome: 'Discipline, respect, and technical mastery.',
-        image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=1200&q=80',
-        mainLabel: 'BELT GRADING CEREMONY',
-        mainTitle: 'Junior Kata & Kumite Evaluations',
-        mainDetail: 'Saturday 04:00 PM • Main Mat Dojo • 22 Cadets',
-        hasFacilities: false,
-        mini1Label: "TODAY'S BATCH",
-        mini1Title: 'Sparring & Agility Drills',
-        mini1Detail: '05:30 PM • 16 Present',
-        mini2Label: 'STRIPE PROMOTIONS',
-        mini2Title: '14 Ready to Test',
-        mini2Detail: 'Safety waivers verified'
-      }
+      multisport: { label: 'MULTI-SPORT & SOCIAL CLUB', appName: 'ROYAL PALMS SPORTS CLUB', welcome: 'One digital home for your entire club.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80', mainLabel: 'INTEGRATED DISCIPLINES', mainTitle: 'Badminton • Tennis • Swimming • Squash • Gym', mainDetail: 'Members switch disciplines with one digital passport and membership pass', mini1Label: 'ACTIVE TODAY', mini1Title: '310 Check-ins', mini1Detail: 'Across 4 sports courts', mini2Label: 'CAPACITY', mini2Title: '84% Booked', mini2Detail: 'Court booking active' },
+      basketball: { label: 'BASKETBALL ACADEMY', appName: 'SONICS BASKETBALL ACADEMY', welcome: 'Game day is coming.', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80', mainLabel: 'NEXT TOURNAMENT', mainTitle: 'State Youth Championship', mainDetail: '7 days to go • Socorro Arena', mini1Label: "TODAY'S BATCH", mini1Title: 'Cadets Training', mini1Detail: '04:30 PM • 18 Attending', mini2Label: 'ACTIVE ROSTER', mini2Title: '142 Athletes', mini2Detail: 'All batches verified' },
+      performing_arts: { label: 'PERFORMING ARTS', appName: 'RHYTHM HOUSE DRAMA', welcome: 'Center stage awaits.', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80', mainLabel: 'UPCOMING PRODUCTION', mainTitle: 'Monsoon Musical Gala', mainDetail: '14 days to go • 180 RSVPs', mini1Label: "REHEARSAL", mini1Title: 'Contemporary & Drama', mini1Detail: '05:30 PM • 28 Cast', mini2Label: 'STUDENTS', mini2Title: '94 Enrolled', mini2Detail: 'Recitals verified' },
+      creative_studio: { label: 'FINE ARTS & CERAMICS', appName: 'ARTISAN CLAY & CANVAS', welcome: 'Where imagination takes shape.', image: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1200&q=80', mainLabel: 'EXHIBITION & SALE', mainTitle: 'Pottery & Canvas Showcase', mainDetail: 'Next Weekend • 8 Workbenches', mini1Label: "WORKSHOP", mini1Title: 'Wheel Pottery (12 Artists)', mini1Detail: '03:30 PM', mini2Label: 'MATERIALS', mini2Title: '100% Stocked', mini2Detail: 'Slots locked' },
+      wellness: { label: 'WELLNESS SANCTUARY', appName: 'PRANA SOUND & BREATH', welcome: 'Restore balance and stillness.', image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1200&q=80', mainLabel: 'NEXT IMMERSION', mainTitle: 'Tibetan Sound Bath', mainDetail: 'Tomorrow 07:00 PM', mini1Label: "THERAPIES", mini1Title: '6 Consultations', mini1Detail: 'Private', mini2Label: 'CAPACITY', mini2Title: '92% Booked', mini2Detail: 'Verified' },
+      swimming: { label: 'SWIMMING ACADEMY', appName: 'BLUE CURRENT AQUATICS', welcome: 'Pool & open water sessions.', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80', mainLabel: 'NEXT MORNING SESSION', mainTitle: 'Open Water Bambolim', mainDetail: 'Tomorrow 06:30 AM', mini1Label: 'CONDITIONS', mini1Title: '29°C Calm Water', mini1Detail: 'Clear skies', mini2Label: 'SWIMMERS', mini2Title: '38 Active', mini2Detail: 'Lap logs live' },
+      football: { label: 'FOOTBALL ACADEMY', appName: 'NEXT KICK ACADEMY', welcome: 'Match day is approaching.', image: 'https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=80', mainLabel: 'UPCOMING MATCH', mainTitle: 'Inter-Club Junior Cup', mainDetail: 'Sunday 05:00 PM', mini1Label: "TODAY'S SESSION", mini1Title: 'Tactical Drill (24 Present)', mini1Detail: '05:00 PM', mini2Label: 'RECORD', mini2Title: '8 Matches Played', mini2Detail: 'Leaderboard live' },
+      martial_arts: { label: 'MARTIAL ARTS DOJO', appName: 'VALOR MARTIAL ARTS & BJJ', welcome: 'Discipline and technical mastery.', image: 'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=1200&q=80', mainLabel: 'BELT EVALUATION', mainTitle: 'Junior Kata & Kumite', mainDetail: 'Saturday 04:00 PM', mini1Label: "TODAY'S BATCH", mini1Title: 'Sparring (16 Present)', mini1Detail: '05:30 PM', mini2Label: 'PROMOTIONS', mini2Title: '14 Ready to Test', mini2Detail: 'Waivers verified' }
     };
 
-    // Product Section Tabs
-    function switchProduct(prodKey) {
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
+    function switchProduct(prodKey, suffix = '') {
+      const parent = suffix === 'mob' ? '.block.md\\:hidden' : '.hidden.md\\:block';
+      document.querySelectorAll(`${parent} .tab-btn`).forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll(`${parent} .view-panel`).forEach(panel => panel.classList.remove('active'));
 
-      const targetTab = document.getElementById(`tab-${prodKey}`);
-      const targetPanel = document.getElementById(`panel-${prodKey}`);
-
-      if (targetTab) {
-        targetTab.classList.add('active');
-      }
-      if (targetPanel) {
-        targetPanel.classList.add('active');
-      }
+      const tabId = suffix ? `tab-${prodKey}-${suffix}` : `tab-${prodKey}`;
+      const panelId = suffix ? `panel-${prodKey}-${suffix}` : `panel-${prodKey}`;
+      
+      const targetTab = document.getElementById(tabId);
+      const targetPanel = document.getElementById(panelId);
+      if (targetTab) targetTab.classList.add('active');
+      if (targetPanel) targetPanel.classList.add('active');
       try { lucide.createIcons(); } catch(e) {}
     }
 
-    // Category / Institute Switcher
-    function switchAcademySport(sportKey) {
-      document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.className = 'category-btn px-3 py-2 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-xs font-semibold hover:border-black cursor-pointer text-center';
+    function switchAcademySport(sportKey, suffix = '') {
+      const parent = suffix === 'mob' ? '.block.md\\:hidden' : '.hidden.md\\:block';
+      document.querySelectorAll(`${parent} .category-btn`).forEach(btn => {
+        btn.className = `category-btn px-3 py-1.5 rounded-lg border border-black/15 bg-neutral-50 text-neutral-700 text-[11px] font-semibold whitespace-nowrap`;
       });
-      const activeBtn = document.getElementById(`btn-sport-${sportKey}`);
+
+      const btnId = suffix ? `btn-sport-${sportKey}-${suffix}` : `btn-sport-${sportKey}`;
+      const activeBtn = document.getElementById(btnId);
       if (activeBtn) {
-        activeBtn.className = 'category-btn active px-3 py-2 rounded-lg border border-black bg-black text-white text-xs font-semibold cursor-pointer text-center';
+        activeBtn.className = `category-btn active px-3 py-1.5 rounded-lg border border-black bg-black text-white text-[11px] font-semibold whitespace-nowrap`;
       }
 
       const data = ACADEMY_DATA[sportKey];
       if (!data) return;
 
-      document.getElementById('sport-label').textContent = data.label;
-      document.getElementById('sport-app-name').textContent = data.appName;
-      document.getElementById('sport-headline').textContent = data.welcome;
-      document.getElementById('sport-img').src = data.image;
+      const s = suffix ? `-${suffix}` : '';
+      if (document.getElementById(`sport-app-name${s}`)) document.getElementById(`sport-app-name${s}`).textContent = data.appName;
+      if (document.getElementById(`card-main-label${s}`)) document.getElementById(`card-main-label${s}`).textContent = data.mainLabel;
+      if (document.getElementById(`card-main-title${s}`)) document.getElementById(`card-main-title${s}`).textContent = data.mainTitle;
+      if (document.getElementById(`card-main-detail${s}`)) document.getElementById(`card-main-detail${s}`).textContent = data.mainDetail;
+      if (document.getElementById(`card-mini1-label${s}`)) document.getElementById(`card-mini1-label${s}`).textContent = data.mini1Label;
+      if (document.getElementById(`card-mini1-title${s}`)) document.getElementById(`card-mini1-title${s}`).textContent = data.mini1Title;
+      if (document.getElementById(`card-mini2-label${s}`)) document.getElementById(`card-mini2-label${s}`).textContent = data.mini2Label;
+      if (document.getElementById(`card-mini2-title${s}`)) document.getElementById(`card-mini2-title${s}`).textContent = data.mini2Title;
 
-      document.getElementById('card-main-label').textContent = data.mainLabel;
-      document.getElementById('card-main-title').textContent = data.mainTitle;
-      document.getElementById('card-main-detail').textContent = data.mainDetail;
-
-      const facilityBox = document.getElementById('facility-addon-box');
-      if (data.hasFacilities) {
-        facilityBox.style.display = 'block';
-      } else {
-        facilityBox.style.display = 'none';
-      }
-
-      document.getElementById('card-mini1-label').textContent = data.mini1Label;
-      document.getElementById('card-mini1-title').textContent = data.mini1Title;
-      document.getElementById('card-mini1-detail').textContent = data.mini1Detail;
-
-      document.getElementById('card-mini2-label').textContent = data.mini2Label;
-      document.getElementById('card-mini2-title').textContent = data.mini2Title;
-      document.getElementById('card-mini2-detail').textContent = data.mini2Detail;
-    }
-
-    // Audience selection in WhatsApp broadcaster
-    function setAudience(type, btn) {
-      document.querySelectorAll('.target-aud-btn').forEach(b => {
-        b.className = 'px-3 py-1.5 rounded bg-white border border-black/20 text-neutral-700 text-xs font-medium target-aud-btn hover:border-black cursor-pointer';
-      });
-      btn.className = 'px-3 py-1.5 rounded bg-black text-white text-xs font-bold target-aud-btn cursor-pointer';
-
-      const msgBox = document.getElementById('broadcast-msg');
-      if (type === 'due') {
-        msgBox.value = "Hi! Friendly reminder from Club Console regarding your term fee dues. Please clear the pending balance at your earliest convenience. Thank you!";
-      } else if (type === 'u16') {
-        msgBox.value = "🚨 BATCH UPDATE: Tomorrow's training and evaluation session is scheduled for 4:30 PM. Please be on time!";
-      } else {
-        msgBox.value = "🚨 SCHEDULE UPDATE | CLUB CONSOLE\n\nToday's evening session and belt testing has been moved to the indoor Main Dojo at 5:00 PM. See you on the mat! 🥋";
+      if (!suffix) {
+        document.getElementById('sport-label').textContent = data.label;
+        document.getElementById('sport-headline').textContent = data.welcome;
+        document.getElementById('sport-img').src = data.image;
       }
     }
 
-    function dispatchWhatsAppDemo() {
-      const text = encodeURIComponent(document.getElementById('broadcast-msg').value);
+    function dispatchWhatsAppDemo(suffix = '') {
+      const msgId = suffix ? `broadcast-msg-${suffix}` : 'broadcast-msg';
+      const text = encodeURIComponent(document.getElementById(msgId).value);
       window.open(`https://wa.me/?text=${text}`, '_blank');
     }
   </script>
