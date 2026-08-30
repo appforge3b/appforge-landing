@@ -39,7 +39,7 @@
   <!-- Google Sheets CSV Parser Sync -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
-    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSiU7_PPvamhwwxbz1RlUV0egIPV866HG5m8y71KZw7RuO--16JXjZ8YMs7bQRRkRzdjMzjH75UI4n2/pub?gid=0&single=true&output=csv";
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/18kXHOhYTVIHipnoU4OjUtWVBKKnAS0FcieyXu4lWD_o/export?format=csv&gid=0";
 
     async function loadSheetContent() {
       if (!GOOGLE_SHEET_CSV_URL) return;
@@ -78,6 +78,15 @@
     .view-panel { display: none; }
     .view-panel.active { display: block; animation: fadeIn 0.2s ease-out; }
 
+    .price-tab-mob.active {
+      background-color: #000000 !important;
+      color: #CCFF00 !important;
+      border-color: #000000 !important;
+    }
+    .price-tab-mob.active span {
+      color: #FFFFFF !important;
+    }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -104,7 +113,7 @@
             <span class="text-[8px] tracking-widest text-black/50 uppercase font-semibold">BY APPFORGE</span>
           </div>
         </div>
-        <a href="#pricing-mob" class="px-3 py-1.5 rounded-lg bg-black text-brand-lime text-[11px] font-bold">
+        <a href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20Club%20Console" class="px-3 py-1.5 rounded-lg bg-black text-brand-lime text-[11px] font-bold">
           Free Trial
         </a>
       </div>
@@ -123,10 +132,10 @@
         Track fee payments, dispatch 1-click WhatsApp alerts, and manage student schedules without spreadsheet chaos.
       </p>
       <div class="pt-2 flex flex-col gap-2">
-        <a href="#pricing-mob" class="w-full py-3 rounded-xl bg-black text-brand-lime text-xs font-bold shadow-sm">
+        <a href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20Club%20Console" class="w-full py-3 rounded-xl bg-black text-brand-lime text-xs font-bold shadow-sm block text-center">
           Start 30-Day Free Trial →
         </a>
-        <a href="#demo-mob" class="w-full py-2.5 rounded-xl border border-black/15 text-xs font-semibold text-neutral-700">
+        <a href="#demo-mob" class="w-full py-2.5 rounded-xl border border-black/15 text-xs font-semibold text-neutral-700 block text-center">
           Explore Live Preview ↓
         </a>
       </div>
@@ -255,44 +264,68 @@
       </div>
     </section>
 
-    <!-- Mobile Pricing -->
+    <!-- ================= INTERACTIVE MOBILE PRICING ================= -->
     <section id="pricing-mob" class="px-4 py-8 border-t border-black/10 space-y-4">
       <div class="text-center space-y-1">
-        <span class="text-[10px] font-mono font-bold uppercase text-neutral-400 tracking-wider">PRICING</span>
+        <span class="text-[10px] font-mono font-bold uppercase text-neutral-400 tracking-wider">PRICING TIERS</span>
         <h2 class="font-display font-black text-2xl text-black">30 Days Free. Cancel Anytime.</h2>
       </div>
 
-      <div class="p-5 rounded-2xl border-2 border-black bg-neutral-900 text-white space-y-4 shadow-lg">
-        <div class="flex justify-between items-start">
-          <div>
-            <span class="text-[9px] font-mono bg-brand-lime text-black px-2 py-0.5 rounded font-black uppercase">MOST POPULAR</span>
-            <h3 class="font-display font-bold text-xl text-white mt-1">GROW</h3>
-            <p class="text-[11px] text-neutral-400">Complete Academy Operating System</p>
-          </div>
-          <div class="text-right">
-            <span class="text-2xl font-black text-brand-lime font-mono">₹9,999</span>
-            <span class="text-[10px] text-neutral-400 block">/month</span>
-          </div>
-        </div>
-        <ul class="space-y-1.5 text-xs text-neutral-300 pt-3 border-t border-neutral-800">
-          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Auto fee follow-ups on WhatsApp</li>
-          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> 1-tap student attendance & rosters</li>
-          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Free onboarding & data migration</li>
-        </ul>
-        <button onclick="alert('Starting 30-day trial for GROW plan!')" class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black shadow-md">
-          Start 30-Day Free Trial →
+      <!-- 3-Way Plan Switcher Bar -->
+      <div class="grid grid-cols-3 gap-1.5 p-1 bg-neutral-100 rounded-xl border border-black/10">
+        <button onclick="selectMobilePlan('start')" id="plan-tab-start" class="price-tab-mob py-2 rounded-lg text-center cursor-pointer transition-all border border-transparent">
+          <strong class="block text-xs">START</strong>
+          <span class="text-[9px] text-neutral-500 font-mono">₹4,999</span>
+        </button>
+        <button onclick="selectMobilePlan('grow')" id="plan-tab-grow" class="price-tab-mob active py-2 rounded-lg text-center cursor-pointer transition-all border border-transparent">
+          <strong class="block text-xs">GROW</strong>
+          <span class="text-[9px] text-neutral-500 font-mono">₹9,999</span>
+        </button>
+        <button onclick="selectMobilePlan('pro')" id="plan-tab-pro" class="price-tab-mob py-2 rounded-lg text-center cursor-pointer transition-all border border-transparent">
+          <strong class="block text-xs">PRO</strong>
+          <span class="text-[9px] text-neutral-500 font-mono">₹19,999+</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 text-center text-xs">
-        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
-          <strong class="block text-black">START</strong>
-          <span class="font-mono text-neutral-500 font-bold">₹4,999/mo</span>
+      <!-- Dynamic Mobile Plan Details Card -->
+      <div class="p-5 rounded-2xl border-2 border-black bg-neutral-900 text-white space-y-4 shadow-lg">
+        <div class="flex justify-between items-start">
+          <div>
+            <span id="mob-plan-badge" class="text-[9px] font-mono bg-brand-lime text-black px-2 py-0.5 rounded font-black uppercase">MOST POPULAR</span>
+            <h3 id="mob-plan-name" class="font-display font-bold text-xl text-white mt-1">GROW PLAN</h3>
+            <p id="mob-plan-desc" class="text-[11px] text-neutral-400">Complete Academy Operating System</p>
+          </div>
+          <div class="text-right">
+            <span id="mob-plan-price" class="text-2xl font-black text-brand-lime font-mono">₹9,999</span>
+            <span class="text-[10px] text-neutral-400 block">/month</span>
+          </div>
         </div>
-        <div class="p-3 rounded-xl border border-black/10 bg-neutral-50">
-          <strong class="block text-black">PRO</strong>
-          <span class="font-mono text-neutral-500 font-bold">₹19,999/mo</span>
-        </div>
+
+        <!-- Dynamic Plan Feature List -->
+        <ul id="mob-plan-features" class="space-y-1.5 text-xs text-neutral-300 pt-3 border-t border-neutral-800">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Auto fee follow-ups on WhatsApp</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> 1-tap student attendance & rosters</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Branded parent schedule & portal</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i> Free onboarding & data migration</li>
+        </ul>
+
+        <a id="mob-plan-cta" href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20GROW%20Plan" class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black shadow-md block text-center">
+          Start 30-Day Free Trial →
+        </a>
+      </div>
+    </section>
+
+    <!-- Mobile Founder Card -->
+    <section class="px-4 py-6 border-t border-black/10">
+      <div class="p-4 rounded-2xl bg-neutral-50 border border-black/10 text-center space-y-2">
+        <strong class="text-xs text-black block">Personal Setup Assistance Included</strong>
+        <p class="text-[11px] text-neutral-500 leading-relaxed">
+          We migrate all your students, schedules, and past dues from spreadsheets for free.
+        </p>
+        <a href="mailto:appforge.3b@gmail.com?subject=Inquiry%20from%20Club%20Console" class="inline-flex items-center gap-1.5 text-xs font-bold text-black pt-1">
+          <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+          <span>appforge.3b@gmail.com</span>
+        </a>
       </div>
     </section>
 
@@ -321,7 +354,7 @@
           <a href="#why-appforge" class="text-xs font-semibold text-black hover:text-neutral-600">Why AppForge</a>
           <a href="#pricing" class="text-xs font-semibold text-black hover:text-neutral-600">Pricing</a>
           <a href="#about" class="text-xs font-semibold text-black hover:text-neutral-600">About</a>
-          <a href="#pricing" class="px-4 py-2 rounded-lg bg-black text-brand-lime text-xs font-bold border border-black hover:bg-neutral-900 transition-all shadow-sm">
+          <a href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20Club%20Console" class="px-4 py-2 rounded-lg bg-black text-brand-lime text-xs font-bold border border-black hover:bg-neutral-900 transition-all shadow-sm">
             Start 30-Day Free Trial
           </a>
         </div>
@@ -513,7 +546,7 @@
       </div>
     </section>
 
-    <!-- Desktop Pricing -->
+    <!-- Desktop Pricing Section -->
     <section id="pricing" class="max-w-6xl mx-auto px-6 py-14 space-y-8 border-t border-black/10">
       <div class="text-center space-y-2">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-limeLight border border-brand-lime text-xs font-mono font-bold text-black uppercase">
@@ -523,6 +556,7 @@
       </div>
 
       <div class="grid grid-cols-3 gap-6">
+        <!-- START PLAN -->
         <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
           <div class="space-y-4">
             <h3 class="font-display font-bold text-xl text-black">START</h3>
@@ -531,11 +565,15 @@
               <li>✓ Student & parent directory</li>
               <li>✓ Automated fee collection & receipts</li>
               <li>✓ Direct WhatsApp alerts</li>
+              <li>✓ Free student data migration</li>
             </ul>
           </div>
-          <button class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold">Start Free Trial</button>
+          <a href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20START%20Plan" class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold block text-center hover:bg-neutral-800 transition-all">
+            Start Free Trial
+          </a>
         </div>
 
+        <!-- GROW PLAN -->
         <div class="p-6 rounded-2xl border-2 border-black bg-neutral-900 text-white flex flex-col justify-between space-y-6 shadow-xl">
           <div class="space-y-4">
             <h3 class="font-display font-bold text-xl text-white">GROW</h3>
@@ -544,11 +582,15 @@
               <li>✓ Everything in Start</li>
               <li>✓ Branded student reports & portal</li>
               <li>✓ Automated WhatsApp fee pings</li>
+              <li>✓ Advanced revenue analytics</li>
             </ul>
           </div>
-          <button class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black">Start Free Trial</button>
+          <a href="mailto:appforge.3b@gmail.com?subject=Start%2030-Day%20Free%20Trial%20-%20GROW%20Plan" class="w-full py-3 rounded-xl bg-brand-lime text-black text-xs font-black block text-center hover:bg-brand-limeHover transition-all shadow-md">
+            Start Free Trial
+          </a>
         </div>
 
+        <!-- PRO PLAN -->
         <div class="p-6 rounded-2xl border border-black/15 bg-white flex flex-col justify-between space-y-6 shadow-sm">
           <div class="space-y-4">
             <h3 class="font-display font-bold text-xl text-black">PRO</h3>
@@ -557,9 +599,12 @@
               <li>✓ Multi-branch & campus management</li>
               <li>✓ Multi-sport booking engine</li>
               <li>✓ Dedicated account manager</li>
+              <li>✓ Custom accounting integrations</li>
             </ul>
           </div>
-          <button class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold">Talk to Team</button>
+          <a href="mailto:appforge.3b@gmail.com?subject=Inquiry%20-%20PRO%20Enterprise%20Plan" class="w-full py-3 rounded-xl bg-black text-white text-xs font-bold block text-center hover:bg-neutral-800 transition-all">
+            Talk to Team
+          </a>
         </div>
       </div>
     </section>
@@ -573,6 +618,85 @@
   <!-- Shared Javascript Engine -->
   <script>
     lucide.createIcons();
+
+    // Mobile Plan Switcher Logic
+    const MOBILE_PLANS = {
+      start: {
+        name: 'START PLAN',
+        desc: 'For single studios, academies & emerging clubs',
+        price: '₹4,999',
+        badge: 'STARTER',
+        features: [
+          'Complete setup & student data migration',
+          'Student & parent directory',
+          'Batches, scheduling & attendance',
+          'Automated fee collection & receipts',
+          'Direct WhatsApp alerts & notifications'
+        ],
+        ctaText: 'Start 30-Day Free Trial →',
+        subject: 'Start 30-Day Free Trial - START Plan'
+      },
+      grow: {
+        name: 'GROW PLAN',
+        desc: 'Complete Academy Operating System',
+        price: '₹9,999',
+        badge: 'MOST POPULAR',
+        features: [
+          'Everything in Start plan',
+          'Online admissions & self-enrollment',
+          'Custom branded parent schedule & portal',
+          'Branded digital student report cards',
+          'Automated fee follow-up WhatsApp pings',
+          'Priority WhatsApp support desk'
+        ],
+        ctaText: 'Start 30-Day Free Trial →',
+        subject: 'Start 30-Day Free Trial - GROW Plan'
+      },
+      pro: {
+        name: 'PRO ENTERPRISE',
+        desc: 'For multi-sport clubs & multi-branch institutes',
+        price: '₹19,999+',
+        badge: 'SCALE',
+        features: [
+          'Everything in Grow plan',
+          'Multiple branches & campus management',
+          'Multi-sport & facility booking engine',
+          'Custom automated intake workflows',
+          'Custom payment & accounting integrations',
+          'Dedicated account manager & on-site onboarding'
+        ],
+        ctaText: 'Talk to Team →',
+        subject: 'Inquiry - PRO Enterprise Plan'
+      }
+    };
+
+    function selectMobilePlan(planKey) {
+      document.querySelectorAll('.price-tab-mob').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`plan-tab-${planKey}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const plan = MOBILE_PLANS[planKey];
+      if (!plan) return;
+
+      document.getElementById('mob-plan-badge').textContent = plan.badge;
+      document.getElementById('mob-plan-name').textContent = plan.name;
+      document.getElementById('mob-plan-desc').textContent = plan.desc;
+      document.getElementById('mob-plan-price').textContent = plan.price;
+
+      const featList = document.getElementById('mob-plan-features');
+      featList.innerHTML = plan.features.map(f => `
+        <li class="flex items-center gap-2">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-brand-lime shrink-0"></i>
+          <span>${f}</span>
+        </li>
+      `).join('');
+
+      const cta = document.getElementById('mob-plan-cta');
+      cta.textContent = plan.ctaText;
+      cta.href = `mailto:appforge.3b@gmail.com?subject=${encodeURIComponent(plan.subject)}`;
+
+      try { lucide.createIcons(); } catch(e) {}
+    }
 
     const ACADEMY_DATA = {
       multisport: { label: 'MULTI-SPORT & SOCIAL CLUB', appName: 'ROYAL PALMS SPORTS CLUB', welcome: 'One digital home for your entire club.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80', mainLabel: 'INTEGRATED DISCIPLINES', mainTitle: 'Badminton • Tennis • Swimming • Squash • Gym', mainDetail: 'Members switch disciplines with one digital passport and membership pass', mini1Label: 'ACTIVE TODAY', mini1Title: '310 Check-ins', mini1Detail: 'Across 4 sports courts', mini2Label: 'CAPACITY', mini2Title: '84% Booked', mini2Detail: 'Court booking active' },
