@@ -60,6 +60,44 @@
       });
     }
     window.addEventListener('DOMContentLoaded', loadSheetContent);
+
+// Google Sheets CSV URL with Cache-Buster
+const BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18kXHOhYTVIHipnoU4OjUtWVBKKnAS0FcieyXu4lWD_o/export?format=csv&gid=0";
+
+async function loadSheetContent() {
+  if (!BASE_SHEET_URL) return;
+
+  // Append timestamp to prevent browser & CDN caching
+  const freshUrl = `${BASE_SHEET_URL}&_cb=${Date.now()}`;
+
+  Papa.parse(freshUrl, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      results.data.forEach(row => {
+        // Handle case-insensitive headers (Key/key and Value/value)
+        const key = row.key || row.Key || row.KEY;
+        const val = row.value || row.Value || row.VALUE;
+
+        if (!key || !val) return;
+
+        const elements = document.querySelectorAll(`[data-cms="${key.trim()}"]`);
+        elements.forEach(el => {
+          if (el.tagName === 'IMG') {
+            el.src = val.trim();
+          } else if (el.tagName === 'A' && key.toLowerCase().includes('link')) {
+            el.href = val.trim();
+          } else {
+            el.innerHTML = val.trim();
+          }
+        });
+      });
+    }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', loadSheetContent);    
   </script>
 
   <style>
