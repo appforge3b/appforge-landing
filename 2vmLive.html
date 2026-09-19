@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>2verymuch — Effortless Business Execution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+  /* Strict Mondrian Palette */
+  --white: #ffffff;
+  --black: #0a0a0a;
+  --red: #df2229;
+  --blue: #0050b5;
+  --yellow: #fbd116;
+  
+  /* Layout */
+  --border-weight: 5px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0;
+}
+
+html { 
+  scroll-behavior: smooth; 
+  background-color: var(--white);
+}
+
+body {
+  color: var(--black);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  padding: clamp(10px, 3vw, 40px);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.master-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--border-weight);
+  background-color: var(--black); /* The gap reveals the black background, creating perfect grid lines */
+  border: var(--border-weight) solid var(--black);
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-shadow: 16px 16px 0px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 10;
+}
+
+.cell {
+  background-color: var(--white);
+  padding: clamp(30px, 5vw, 60px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Color Modifiers */
+.bg-red { background-color: var(--red); color: var(--white); }
+.bg-blue { background-color: var(--blue); color: var(--white); }
+.bg-yellow { background-color: var(--yellow); color: var(--black); }
+.bg-black { background-color: var(--black); color: var(--white); }
+
+/* Typography */
+h1, h2, h3, h4, .brand-text {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/* Navigation - Now Sticky */
+.nav-cell {
+  grid-column: span 12;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px clamp(30px, 5vw, 60px);
+  
+  /* Sticky Navigation Implementation */
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  /* Simulates the grid line below the nav when it overlaps other content */
+  box-shadow: 0 var(--border-weight) 0 var(--black);
+}
+
+.brand-text {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--black);
+}
+
+@keyframes colorLoop {
+  0%, 100% { background-color: var(--red); color: var(--white); }
+  33% { background-color: var(--yellow); color: var(--black); }
+  66% { background-color: var(--blue); color: var(--white); }
+}
+
+.brand-badge {
+  background: var(--yellow);
+  color: var(--black);
+  padding: 4px 10px;
+  font-size: 16px;
+  border: 3px solid var(--black);
+  transform: rotate(-4deg);
+  animation: colorLoop 3s infinite;
+  transition: transform 0.2s;
+}
+.brand-text:hover .brand-badge {
+  transform: rotate(4deg) scale(1.1);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.nav-links a {
+  color: var(--black);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -4px; width: 0%; height: 3px;
+  background: var(--red);
+  transition: width 0.3s;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* Hero Text (Left side) */
+.hero-text-cell {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 60vh;
+}
+.hero-welcome {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: inline-block;
+  background: var(--black);
+  color: var(--white);
+  padding: 6px 12px;
+  align-self: flex-start;
+}
+.hero-text-cell h1 {
+  font-size: clamp(50px, 8vw, 110px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 30px;
+}
+.hero-text-cell p {
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 500;
+  max-width: 500px;
+  line-height: 1.4;
+}
+
+/* Hero Art (Right side) */
+.hero-art-cell {
+  grid-column: span 5;
+  background-image: 
+    linear-gradient(var(--black) 2px, transparent 2px),
+    linear-gradient(90deg, var(--black) 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: -2px -2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Our Foundation */
+.story-cell { grid-column: span 12; }
+.section-kicker {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-kicker::after {
+  content: '';
+  flex-grow: 1;
+  height: var(--border-weight);
+  background: var(--black);
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.story-item h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--black);
+}
+.story-item p { font-size: 16px; line-height: 1.6; font-weight: 500; }
+
+/* What We Do */
+.service-cell {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  transition: background-color 0.4s, color 0.4s;
+  cursor: pointer;
+}
+.service-cell .icon-box {
+  width: 64px; height: 64px;
+  border: var(--border-weight) solid var(--black);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 40px;
+  background: var(--white);
+  color: var(--black);
+  transition: transform 0.3s;
+}
+.service-cell:hover .icon-box { transform: translate(6px, -6px); box-shadow: -6px 6px 0px var(--black); }
+
+.service-cell h2 { font-size: clamp(32px, 4vw, 48px); margin-bottom: 20px; }
+.service-cell p { font-size: 18px; line-height: 1.5; font-weight: 500; margin-bottom: 40px; max-width: 400px;}
+
+.neo-btn {
+  align-self: flex-start;
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 800; text-transform: uppercase;
+  padding: 16px 24px;
+  background: var(--white);
+  color: var(--black);
+  border: var(--border-weight) solid var(--black);
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 6px 6px 0px var(--black);
+}
+.neo-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px var(--black);
+}
+.neo-btn:active {
+  transform: translate(6px, 6px);
+  box-shadow: 0px 0px 0px var(--black);
+}
+
+#service-saas:hover { background-color: var(--blue); color: var(--white); }
+#service-saas:hover .icon-box { background: var(--yellow); }
+#service-bespoke:hover { background-color: var(--yellow); color: var(--black); }
+#service-bespoke:hover .icon-box { background: var(--red); color: var(--white); }
+
+/* How We Work */
+.how-header-cell { grid-column: span 12; padding-bottom: 0; border-bottom: 0; }
+.step-cell {
+  grid-column: span 3;
+  min-height: 320px;
+  display: flex; flex-direction: column;
+}
+.step-num {
+  font-family: var(--font-display); font-size: 48px; font-weight: 900;
+  margin-bottom: 20px;
+  -webkit-text-stroke: 2px var(--black);
+  color: transparent;
+}
+.bg-red .step-num, .bg-blue .step-num { -webkit-text-stroke: 2px var(--white); }
+.step-cell h4 { font-size: 24px; margin-bottom: 16px; }
+.step-cell p { font-size: 15px; line-height: 1.5; font-weight: 500; }
+
+/* Footer */
+.footer-cell {
+  grid-column: span 12;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 30px clamp(30px, 5vw, 60px);
+  background: var(--black);
+  color: var(--white);
+}
+
+@media (max-width: 1024px) {
+  .hero-text-cell { grid-column: span 12; min-height: 40vh; }
+  .hero-art-cell { grid-column: span 12; height: 350px; border-top: var(--border-weight) solid var(--black); }
+  .service-cell { grid-column: span 12; }
+  .step-cell { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .story-grid { grid-template-columns: 1fr; }
+  .step-cell { grid-column: span 12; }
+  .footer-cell { flex-direction: column; gap: 20px; text-align: center; }
+}
+
+/* Floating Overlay & Solid Circles */
+.floating-circle-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none; 
+  overflow: hidden;
+}
+
+.solid-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: var(--border-weight) solid var(--black);
+  box-shadow: inset -10px -10px 0px rgba(0,0,0,0.1); 
+  mix-blend-mode: normal; 
+  will-change: transform;
+  opacity: 1 !important; /* Requirement 4: Always opaque */
+}
+
+/* Distinct sizing matches reference design */
+.circ-red { background-color: var(--red); width: 220px; height: 220px; }
+.circ-blue { background-color: var(--blue); width: 160px; height: 160px; }
+.circ-yellow { background-color: var(--yellow); width: 120px; height: 120px; }
+
+</style>
+</head>
+<body>
+
+  <!-- FLOATING CIRCLES LAYER -->
+  <div class="floating-circle-overlay">
+    <div class="solid-circle circ-red" id="c-red"></div>
+    <div class="solid-circle circ-blue" id="c-blue"></div>
+    <div class="solid-circle circ-yellow" id="c-yellow"></div>
+  </div>
+
+  <!-- MASTER MONDRIAN GRID -->
+  <div class="master-grid">
+
+    <!-- STICKY NAVIGATION -->
+    <header class="cell nav-cell" id="main-nav">
+      <a href="#" class="brand-text">
+        2verymuch <span class="brand-badge">2vm</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#story">Our Story</a>
+        <a href="#do">What We Do</a>
+        <a href="#work">How We Work</a>
+      </nav>
+    </header>
+
+    <!-- HERO TEXT -->
+    <section class="cell hero-text-cell">
+      <div class="hero-welcome">Welcome to 2vm</div>
+      <h1>make day-to-day business execution effortless.</h1>
+      <p>We build sharp, highly-efficient digital workflows and operational systems designed to eliminate friction.</p>
+    </section>
+
+    <!-- HERO ART (Cage target for the circles) -->
+    <section class="cell hero-art-cell" id="hero-art-cell"></section>
+
+    <!-- OUR STORY -->
+    <section class="cell story-cell" id="story">
+      <div class="section-kicker">01 / Our Foundation</div>
+      <div class="story-grid">
+        <div class="story-item">
+          <h3>Background & Origin</h3>
+          <p>Founded by experienced IT professionals, we recognized that everyday operations were bogged down by outdated, messy processes. We set out to clean the slate.</p>
+        </div>
+        <div class="story-item">
+          <h3>Core Mission</h3>
+          <p>Building deep operational workflows that feel as precise and structural as modern architecture. No bloat, just pure utility.</p>
+        </div>
+        <div class="story-item">
+          <h3>Vision</h3>
+          <p>Bringing AI-native workflows to the forefront of your organization, making current business workflows blindingly efficient.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT WE DO -->
+    <div class="cell how-header-cell" id="do" style="padding-bottom: 20px;">
+      <div class="section-kicker">02 / What We Do</div>
+    </div>
+    
+    <article class="cell service-cell" id="service-saas">
+      <div>
+        <div class="icon-box"><i data-lucide="layers" size="32"></i></div>
+        <h2>SaaS Products (Club Console)</h2>
+        <p>Explore our highly-structured SaaS products for business users to digitize logic and minimize admin overheads. Ready to deploy.</p>
+      </div>
+      <a href="#" class="neo-btn">Explore Console <i data-lucide="arrow-right"></i></a>
+    </article>
+
+    <article class="cell service-cell" id="service-bespoke">
+      <div>
+        <div class="icon-box"><i data-lucide="pen-tool" size="32"></i></div>
+        <h2>Bespoke Solutions</h2>
+        <p>Tailor-made AI workflows designed precisely around your unique operational challenges and internal team structures.</p>
+      </div>
+      <a href="#" class="neo-btn">Bring us a problem <i data-lucide="arrow-right"></i></a>
+    </article>
+
+    <!-- HOW WE WORK -->
+    <div class="cell how-header-cell" id="work" style="padding-bottom: 20px;">
+      <div class="section-kicker">03 / How We Work</div>
+    </div>
+
+    <div class="cell step-cell">
+      <div class="step-num">1</div>
+      <h4>Exploratory Chat</h4>
+      <p>An honest, direct consultation call to map out exactly where your operational friction exists today.</p>
+    </div>
+    <div class="cell step-cell bg-yellow">
+      <div class="step-num">2</div>
+      <h4>Workflow Mapping</h4>
+      <p>We architect a rigid, logical structure for your new AI-native workflow. Blank canvas to blueprint.</p>
+    </div>
+    <div class="cell step-cell bg-red">
+      <div class="step-num">3</div>
+      <h4>Prototype & Demo</h4>
+      <p>We construct a tangible, interactive prototype. You test the structure. We iterate until it fits perfectly.</p>
+    </div>
+    <div class="cell step-cell bg-blue">
+      <div class="step-num">4</div>
+      <h4>Seamless Rollout</h4>
+      <p>Full deployment into your organization with robust, hands-on support. The execution phase.</p>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="cell footer-cell">
+      <div class="brand-text" style="color: var(--white);">
+        2verymuch <span class="brand-badge" style="border-color: var(--white);">2vm</span>
+      </div>
+      <div>© 2026 2verymuch. All rights reserved. De Stijl Edition.</div>
+    </footer>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Physics Entity Properties
+    const circleElements = [
+      { el: document.getElementById('c-red'), size: 220, offsetX: 0, offsetY: 0, speedX: 0.0012, speedY: 0.0014 },
+      { el: document.getElementById('c-blue'), size: 160, offsetX: Math.PI / 2, offsetY: Math.PI / 3, speedX: 0.0016, speedY: 0.0011 },
+      { el: document.getElementById('c-yellow'), size: 120, offsetX: Math.PI, offsetY: Math.PI / 1.5, speedX: 0.0010, speedY: 0.0018 }
+    ];
+
+    const heroBox = document.getElementById('hero-art-cell');
+    const navBar = document.getElementById('main-nav');
+    
+    // Lerp helper for smooth boundary transitions
+    function lerp(start, end, amt) {
+      return (1 - amt) * start + amt * end;
+    }
+
+    function animateFloatingCircles() {
+      const time = performance.now();
+      
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      
+      // Get exact physical coordinates of the hero grid box and navigation
+      const rect = heroBox.getBoundingClientRect();
+      const navHeight = navBar.offsetHeight;
+      const cagePadding = 5; 
+      
+      /* 
+        REQUIREMENT 3 & 5 LOGIC: 
+        Calculate the escape trigger point.
+        The trigger happens when the top of the hero box is exactly 50% of its height 
+        above the bottom edge of the sticky nav.
+      */
+      const escapeStartOffset = navHeight - (rect.height * 0.5);
+      
+      // How far past the 50% threshold have we scrolled?
+      // When rect.top is smaller than escapeStartOffset, scrolledPast > 0.
+      const scrolledPast = escapeStartOffset - rect.top;
+      
+      // We animate the full escape transition over 400px of scroll for a smooth breakout
+      const escapeTransitionDistance = 400; 
+      
+      let rawProgress = 0;
+      if (scrolledPast > 0) {
+        rawProgress = Math.min(scrolledPast / escapeTransitionDistance, 1);
+      }
+      
+      // Smooth cubic easing for the escape
+      let easeProgress = 1 - Math.pow(1 - rawProgress, 3);
+      
+      /* 
+        Interpolate Bounding Box Constraints:
+        When caged (ease = 0): Bounds match `hero-art-cell` precisely (moving with scroll).
+        When escaped (ease = 1): Bounds span full window width, but Y-min is locked to navHeight (below nav).
+      */
+      const minX = lerp(rect.left + cagePadding, 0, easeProgress);
+      const minY = lerp(rect.top + cagePadding, navHeight, easeProgress); 
+      const maxX = lerp(rect.right - cagePadding, w, easeProgress);
+      const maxY = lerp(rect.bottom - cagePadding, h, easeProgress);
+
+      circleElements.forEach(circ => {
+        // Deterministic organic bounce mapping
+        const normalX = (Math.sin(time * circ.speedX + circ.offsetX) + 1) / 2;
+        const normalY = (Math.cos(time * circ.speedY + circ.offsetY) + 1) / 2;
+
+        const availableWidth = Math.max(0, maxX - minX - circ.size);
+        const availableHeight = Math.max(0, maxY - minY - circ.size);
+        
+        // Map normal coordinates into our active bounding box
+        const finalX = minX + (normalX * availableWidth);
+        const finalY = minY + (normalY * availableHeight);
+
+        // Hardware accelerated repositioning (opacity remains locked to 1 in CSS)
+        circ.el.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
+      });
+
+      requestAnimationFrame(animateFloatingCircles);
+    }
+
+    // Start rendering engine
+    animateFloatingCircles();
+  </script>
+</body>
+</html>
